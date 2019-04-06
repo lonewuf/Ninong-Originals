@@ -31,8 +31,5 @@
     "path": "^0.12.7",
     "paypal-rest-sdk": "^1.8.1",
     "resize-img": "^1.1.2"
-  },
-  "engines": {
-    "node": "8.10.0"
   }
 }
