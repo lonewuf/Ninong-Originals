@@ -1,0 +1,85 @@
+<% include ./partials/header %>
+
+<% if(typeof cart !== 'undefined') { %>
+
+  <h1 class="display-4">My Cart</h1>
+
+  <table class="table table-striped alignmid">
+      <thead>
+          <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th></th>
+              <th>Subtotal</th>
+          </tr>
+      </thead>
+      <tbody>
+          <% var total = 0 %>
+          <% cart.forEach(product => { %>
+          <% var subTotal = parseFloat(product.price * product.qty).toFixed(2) %>
+          <% total += +subTotal %>
+            <tr>
+              <td><img class="cpi" src="<%= product.image %>" alt="none"></td>
+              <td><%= product.title %></td>
+              <td>&#8369;<%= product.price %></td>
+              <td><%= product.qty %></td>
+              <td>
+                <a href="/cart/update/<%= product.title %>?action=add">+</a>&nbsp;
+                <a href="/cart/update/<%= product.title %>?action=remove">-</a>&nbsp;
+                <a href="/cart/update/<%= product.title %>?action=clear">Clear</a>&nbsp;
+
+              </td>
+              <td>&#8369;<%= subTotal %></td>
+            </tr>
+          <% }); %>
+          <tr>
+              <td colspan="6" align="right"><b>Total: </b>&#8369;<%= parseFloat(total).toFixed(2) %></td>
+          </tr>
+          <tr>
+              <td colspan="5" align="right">
+                  <a class="clearcart btn btn-danger confirmDeletion" href="/cart/clear">Clear cart</a>
+              </td>
+              <td colspan="5" align="right">
+                  <form action="/cart/pay" method="POST">
+                    <button class="btn btn-success" type="submit">Buy in Paypal</button>
+                  </form>
+              </td>
+                
+          </tr>
+      </tbody>
+  </table>
+
+<% } else { %>
+  <h1 class="display-4 text-center">Your cart is empty</h1>
+<% } %>
+
+<script>
+
+  $(() => {
+  
+    // $('a.buyit').on('click', function (e) {
+    //   e.preventDefault();
+        
+    //     $.get('/cart/buynow', function() {
+    //         $('form.pp input[type=image]').click();
+    //         $('.ajaxbg').show();
+    //     });
+    // });
+
+
+    $('a.clearcart').on('click', function () {
+        if (!confirm('Confirm clear cart'))
+            return false;
+    });
+
+
+  })
+
+</script>
+
+
+
+
+<% include ./partials/footer %>

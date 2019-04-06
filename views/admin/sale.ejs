@@ -1,0 +1,40 @@
+<%- include('../partials/adminheader') %>
+
+  <div class="container">
+    <h1 class="display-4">Sales</h1>
+  </div>
+  <br>
+
+    
+  <!-- STRIPED TABLE -->
+  <table class="table table-striped alignmid ">
+      <thead>
+          <tr class="home">
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Category</th>
+              <th>Product Image</th>
+          </tr>
+      </thead>
+      <tbody>
+        <% arrSales.forEach(product => { %>
+          <tr>
+              <td><%= product.title %></td>
+              <td>&#8369;<%= parseFloat(product.price).toFixed(2) %></td>
+              <td><%= product.quantity %></td>
+              <td><%= product.category %></td>
+              <td>
+                <% if(product.image == ""){ %>
+                  <img id="noimage" src="/images/noimage.png">
+                <% } else { %>
+                  <img id="noimage" src="/product_images/<%= product._id%>/<%= product.image %>">
+                <% } %>
+              </td>
+          </tr>
+          <% }); %>
+      </tbody>
+  </table>
+
+  
+<%- include('../partials/adminfooter') %>

@@ -1,0 +1,32 @@
+<%- include('../partials/adminheader') %>
+
+  <div class="container">
+    <h1 class="display-4">Add Category</h1>
+    <a href="/admin/categories/add-category" role="button" class="btn btn-primary">Add a new category</a>
+  </div>
+  <br>
+
+  <!-- STRIPED TABLE -->
+  <table class="table table-striped sorting">
+      <thead>
+          <tr>
+              <th>Category</th>
+              <th>Edit</th>
+              <th>Delete</th>
+          </tr>
+      </thead>
+      <tbody>
+        <% categories.forEach(function(category){ %>
+          <tr>
+              <td><%= category.title %></td>
+              <td><a href="/admin/categories/edit-category/<%= category._id %>">Edit</a></td>
+              <td><a class="confirmDeletion" href="/admin/categories/delete-category/<%= category._id %>">Delete</a></td>
+          </tr>
+          <% }); %>
+      </tbody>
+  </table>
+
+  
+
+
+<%- include('../partials/adminfooter') %>

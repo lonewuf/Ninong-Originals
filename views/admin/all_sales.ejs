@@ -1,0 +1,30 @@
+<%- include('../partials/adminheader') %>
+
+  <div class="container">
+    <h1 class="display-4">All Sales</h1>
+  </div>
+  <br>
+
+  <table class="table table-striped sorting">
+      <thead>
+          <tr class="home">
+              <th>Amount</th>
+              <th>Time</th>
+              <th></th>
+          </tr>
+      </thead>
+      <tbody id="page-list">
+        <% sales.forEach(sale => { %>
+          <tr>
+          <td><%= sale.total %></td>
+          <td><%= sale.date.toLocaleString() %></td>
+          <td><a href="/admin/sales/<%= sale._id %>" class="btn btn-primary">Show more</a></td>
+          </tr>
+          <% }); %>
+      </tbody>
+  </table>
+
+  
+
+
+<%- include('../partials/adminfooter') %>

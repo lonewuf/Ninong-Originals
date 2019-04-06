@@ -1,0 +1,36 @@
+<%- include('../partials/adminheader') %>
+
+  <div class="container">
+    <h1 class="display-4">Add Page</h1>
+    <a href="/admin/pages/add-page" role="button" class="btn btn-primary">Add a new page</a>
+  </div>
+  <br>
+
+  <!-- STRIPED TABLE -->
+  <table class="table table-striped sorting">
+      <thead>
+          <tr class="home">
+              <th>Title</th>
+              <th>Edit</th>
+              <th>Delete</th>
+          </tr>
+      </thead>
+      <tbody id="page-list">
+        <% pages.forEach(function(page){ %>
+          <tr id="id_<%= page._id %>" class="<%= page.slug %>">
+              <td><%= page.title %></td>
+              <td><a href="/admin/pages/edit-page/<%= page._id %>">Edit</a></td>
+              <% if (page.slug == "home") { %>
+              <td></td>
+              <% }  else {%>
+              <td><a class="confirmDeletion" href="/admin/pages/delete-page/<%= page._id %>">Delete</a></td>
+              <% }%>
+          </tr>
+          <% }); %>
+      </tbody>
+  </table>
+
+  
+
+
+<%- include('../partials/adminfooter') %>

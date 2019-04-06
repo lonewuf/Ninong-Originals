@@ -1,0 +1,52 @@
+<%- include('../partials/adminheader') %>
+
+  <div class="container">
+    <h1 class="display-4">Products</h1>
+    <a href="/admin/products/add-product" role="button" class="btn btn-primary">Add a new product</a>
+  </div>
+  <br>
+
+  <% if(count > 0) { %>
+
+    
+  <!-- STRIPED TABLE -->
+  <table class="table table-striped alignmid ">
+      <thead>
+          <tr class="home">
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Category</th>
+              <th>Product Image</th>
+              <th>Edit</th>
+              <th>Delete</th>
+          </tr>
+      </thead>
+      <tbody>
+        <% products.forEach(product => { %>
+          <tr>
+              <td><%= product.title %></td>
+              <td>&#8369;<%= parseFloat(product.price).toFixed(2) %></td>
+              <td><%= product.quantity %></td>
+              <td><%= product.category %></td>
+              <td>
+                <% if(product.image == ""){ %>
+                  <img id="noimage" src="/images/noimage.png">
+                <% } else { %>
+                  <img id="noimage" src="/product_images/<%= product._id%>/<%= product.image %>">
+                <% } %>
+              </td>
+              <td><a href="/admin/products/edit-product/<%= product._id %>">Edit</a></td>
+              <td><a class="confirmDeletion" href="/admin/products/delete-product/<%= product._id %>">Delete</a></td>
+          </tr>
+          <% }); %>
+      </tbody>
+  </table>
+
+
+  <% } else { %>
+    
+    <h1 class="display-2 text-center">There are no Products</h1>
+  <% } %>
+  
+<%- include('../partials/adminfooter') %>

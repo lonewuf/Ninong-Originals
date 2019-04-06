@@ -1,0 +1,30 @@
+<%- include('../partials/adminheader') %>
+
+  <div class="container">
+    <h1 class="display-4">Edit Page</h1>
+    <a href="/admin/pages" role="button" class="btn btn-primary">Back to Pages</a>
+  </div>
+  <br>
+  <form action="/admin/pages/edit-page/<%= id %>" method="POST">
+  
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" id="title" value="<%= title %>" name="title" class="form-control form-control-sm" placeholder="Title">
+    </div>
+
+    <div class="form-group">
+      <label for="slug">Slug</label>
+      <input type="text" name="slug" value="<%= slug %>" id="slug" class="form-control form-control-sm" placeholder="Slug">
+      <small id="fileHelp" class="form-text text-muted">Choose</small>
+    </div>
+
+    <div class="form-group">
+      <label for="content">Content</label>
+      <textarea id="ta" placeholder="Content" name="content" rows="5" class="form-control"><%= content %></textarea>
+    </div>
+        <button class="btn btn-outline-primary" type="submit">Submit</button>
+
+  </form>
+
+
+<%- include('../partials/adminfooter') %>

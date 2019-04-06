@@ -1,0 +1,18 @@
+<% include ./partials/header %>
+
+  <div class="card-columns">
+      <% products.forEach(product => { %>
+       <div class="card hvr-glow text-center index">
+          <a class="mt-3 pa" href="/products/<%= product.category %>/<%= product.slug %>">
+            <img class="pimage" src="/product_images/<%= product.id %>/<%= product.image %>" alt="">
+          </a>
+          <div class="card-body">
+            <h5 class="card-title"><%= product.title %></h5>
+            <p class="card-text">&#8369;<%= parseFloat(product.price).toFixed(2) %></p>
+          </div>
+          <a href="/products/<%= product.category %>/<%= product.slug %>" class="btn mb-3 btn-primary">Read More</a>
+       </div>
+      <% }) %>
+  </div>
+  
+<% include ./partials/footer %>
