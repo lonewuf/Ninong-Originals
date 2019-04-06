@@ -141,7 +141,7 @@ app.use('/', pagesRoutes);
 
 
 // Choose Port
-const port = 2000;
+const port = 2000 || process.env.PORT;
 
 // Start Server
 app.listen(port, () => {
