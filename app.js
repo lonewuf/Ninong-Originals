@@ -138,8 +138,6 @@ app.use('/users', usersRoutes);
 app.use('/', pagesRoutes);
 
 
-
-
 // Choose Port
 const port = 2000 || process.env.PORT;
 
