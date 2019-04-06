@@ -137,11 +137,12 @@ app.use('/cart', cartRoutes);
 app.use('/users', usersRoutes);
 app.use('/', pagesRoutes);
 
+var server_host = process.env.YOUR_HOST || '0.0.0.0';
 
 // Choose Port
 const port = 2000 || process.env.PORT;
 
 // Start Server
-app.listen(port, () => {
+app.listen(port, server_host,() => {
   console.log(`Server started on ${port}`);
 });
