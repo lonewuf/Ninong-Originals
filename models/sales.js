@@ -6,7 +6,11 @@ var saleSchema = mongoose.Schema({
     type: Date,
     default: Date.now()
   },
-  total: Number
+  total: Number,
+  buyer: {
+    type: String,
+    required: true
+  }
 });
 
 

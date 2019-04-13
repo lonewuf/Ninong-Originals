@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const paypal = require('paypal-rest-sdk');
 const auth = require('../config/auth')
+const paypal_config = require('../config/paypal');
 
 // Page Model
 const Products = require('../models/products');
@@ -14,7 +15,10 @@ router.get('/add/:product', (req, res) => {
   Products.findOne({slug: productSlug}, (err, foundProduct) => {
     if(err) throw(err);
 
-    if(typeof req.session.cart === "undefined") {
+
+    if(foundProduct.quantity == 0){
+      console.log('Error')
+    }else if(typeof req.session.cart === "undefined") {
       req.session.cart = [];
       req.session.cart.push({
         title: productSlug,
@@ -51,7 +55,11 @@ router.get('/add/:product', (req, res) => {
       }
     }
 
-    req.flash('success', 'Product Added');
+    if(foundProduct.quantity){
+      req.flash('success', 'Product Added');
+    } else {
+      req.flash('danger', 'Sorry out of stock');
+    }
     res.redirect('back');
   });
 });
@@ -127,113 +135,59 @@ router.get('/clear', (req, res) => {
   
 });
 
+// Testing without paypal
+router.post('/testhere', (req, res) => {
+  var cart = req.session.cart;
+        var purchases = []
+        var total = 0;
+        cart.forEach(prod => {
+          total += parseFloat(prod.price).toFixed(2) * parseInt(prod.qty);
+          purchases.push(prod);
+        })
+
+        var myPromises = [];
+
+        // Updating Invetory
+        cart.forEach((prod) => {
+          console.log(prod.title, prod.qty)
+          Products.findOne({slug: prod.slug})
+            .then(prod1 => {
+              Products.updateOne({_id: prod1._id}, {$inc: {quantity: -(parseInt(prod.qty))}})
+                .then((product) => console.log(product))
+                .catch(err => console.log(err))    
+            })
+            .catch(err => console.log(err))
+          })
 
 
-//////////////////////////////////////////////////
+          // db.products.updateOne({title:'nova 4'}, {$inc: {quantity: 3}})
+        // console.log(myPromises, '+++++')
 
+        // myPromises.forEach(myPromise => 
+        // {
+        // myPromise
+        //   .then((product) => console.log(product, '====='))
+        //   .catch((err) => console.log(err))
+        // });
 
-// router.post('/pay', (req, res) => {
+        var sales = new Sales({
+          product: purchases,
+          total: total,
+          buyer: req.user.username
+        })
 
-//   var cart = req.session.cart;
-//   var total = 0;
-//   var myPurchases = [];
-//   var p = 0
-  
-//   cart.forEach(product => {
-//     p = +(parseFloat(product.price).toFixed(2) * product.qty)
-//     total += p;
-//     myPurchases.push({
-//       "name": product.title,
-//                 "price": product.price,
-//                 "currency": "PHP",
-//                 "quantity": product.qty
-//     })
-//     p = 0;
-//   })
+        sales.save(err => {
+          if(err)
+            throw(err)
+          else {
+            delete req.session.cart;
+            req.flash('success', 'Successfully bought item(s)');
+            res.redirect('/cart/checkout')
 
+          }
+        })
+});
 
-//   const create_payment_json = {
-//     "intent": "sale",
-//     "payer": {
-//         "payment_method": "paypal"
-//     },
-//     "redirect_urls": {
-//         "return_url": "http://localhost:8000/cart/succ",
-//         "cancel_url": "http://localhost:8000/cart/cancel"
-//     },
-//     "transactions": [{
-//         "item_list": {
-//             "items": myPurchases
-//         },
-//         "amount": {
-//             "currency": "PHP",
-//             "total": total
-//         }
-//     }]
-// };
-
-// paypal.payment.create(create_payment_json, function (error, payment) {
-//   if (error) {
-//       throw error;
-//   } else {
-//       for(let i = 0;i < payment.links.length;i++){
-//         if(payment.links[i].rel === 'approval_url'){
-//           res.redirect(payment.links[i].href);
-//         }
-//       }
-//   }
-// });
-
-// });
-
-// router.use((req, res, next) => {
-//   res.redirect('/')
-// })
-
-// router.get('/succ', (req, res) => {
-//   const payerId = req.query.PayerID;
-//   const paymentId = req.query.paymentId;
-
-//   var cart = req.session.cart;
-//   var total = 0;
-//   var myPurchases = [];
-//   var p = 0
-  
-//   cart.forEach(product => {
-//     p = +(parseFloat(product.price).toFixed(2) * product.qty)
-//     total += p;
-//     myPurchases.push({
-//       "name": product.title,
-//                 "price": product.price,
-//                 "currency": "PHP",
-//                 "quantity": product.qty
-//     })
-//     p = 0;
-//   })
-
-
-//   const execute_payment_json = {
-//     "payer_id": payerId,
-//     "transactions": [{
-//         "amount": {
-//             "currency": "PHP",
-//             "total": total
-//         }
-//     }]
-//   };
-
-//   paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
-//     if (error) {
-//         console.log(error.response);
-//         throw error;
-//     } else {
-//         console.log(JSON.stringify(payment));
-//         res.send('uccess');
-//     }
-// });
-// });
-
-//////////////////
 
 router.post('/pay', auth.isUser, (req, res) => {
 
@@ -261,8 +215,8 @@ router.post('/pay', auth.isUser, (req, res) => {
         "payment_method": "paypal"
     },
     "redirect_urls": {
-        "return_url": "http://localhost:8000/cart/success",
-        "cancel_url": "http://localhost:8000/cart/cancel"
+        "return_url": paypal_config.success_url,
+        "cancel_url": paypal_config.cancel_url
     },
     "transactions": [{
         "item_list": {
@@ -326,18 +280,44 @@ router.get('/success', (req, res) => {
         console.log(error.response);
         throw error;
     } else {
-        console.log(JSON.stringify(payment));
+        // console.log(JSON.stringify(payment));
         var cart = req.session.cart;
         var purchases = []
         var total = 0;
         cart.forEach(prod => {
-          total += +parseFloat(prod.price).toFixed(2);
+          total += parseFloat(prod.price).toFixed(2) * parseInt(prod.qty);
           purchases.push(prod);
         })
 
+        var myPromises = [];
+
+        // Updating Invetory
+        cart.forEach((prod) => {
+          console.log(prod.title, prod.qty)
+          Products.findOne({slug: prod.slug})
+            .then(prod1 => {
+              Products.updateOne({_id: prod1._id}, {$inc: {quantity: -(parseInt(prod.qty))}})
+                .then((product) => console.log(product))
+                .catch(err => console.log(err))    
+            })
+            .catch(err => console.log(err))
+          })
+
+
+          // db.products.updateOne({title:'nova 4'}, {$inc: {quantity: 3}})
+        // console.log(myPromises, '+++++')
+
+        // myPromises.forEach(myPromise => 
+        // {
+        // myPromise
+        //   .then((product) => console.log(product, '====='))
+        //   .catch((err) => console.log(err))
+        // });
+
         var sales = new Sales({
           product: purchases,
-          total: total
+          total: total,
+          buyer: req.user.username
         })
 
         sales.save(err => {
@@ -346,10 +326,10 @@ router.get('/success', (req, res) => {
           else {
             delete req.session.cart;
             req.flash('success', 'Successfully bought item(s)');
-            res.redirect('/cart/checkout');
+            res.redirect('/cart/checkout')
+
           }
         })
-
     }
 });
 });

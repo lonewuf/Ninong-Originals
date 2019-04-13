@@ -10,12 +10,24 @@ const express           = require('express'),
       paypal            = require('paypal-rest-sdk');
     
 paypal.configure({
-  'mode': 'sandbox', //sandbox or live
+  'mode': 'sandbox', 
   'client_id': 'AQKFyQ5slFTCzJK4ptOlf-KApv1K4eczFM5ILeifN9FXLs8amP-k9uTj9Msj9LgTUwPbDMFTnhuDw3ZM',
   'client_secret': 'EFLnIV3aRBUu3clfkoeQZK3YwaJ3EsZwTZGfTCXXtN9yoer42rptHtt7onnDDTilB4bq6NL9qlH59fvZ'
 });
 
-const app               = express();
+const app = express();
+
+
+// Call all routes
+const pagesRoutes           = require('./routes/pages'),
+      adminPagesRoutes      = require('./routes/admin_pages'),
+      adminCategoriesRoutes = require('./routes/admin_categories'),
+      adminProducts         = require('./routes/admin_products'),
+      productsRoutes        = require('./routes/products'),
+      usersRoutes           = require('./routes/users'),
+      salesRoutes           = require('./routes/admin_sales'),
+      cartRoutes            = require('./routes/cart');
+
 
 // Setup Database
 const myDb = require('./config/database');
@@ -115,18 +127,7 @@ app.use((req, res, next) => {
   res.locals.cart = req.session.cart;
   res.locals.user = req.user || null;
   next();
-})
-
-
-// Call Routes
-const pagesRoutes           = require('./routes/pages'),
-      adminPagesRoutes      = require('./routes/admin_pages'),
-      adminCategoriesRoutes = require('./routes/admin_categories'),
-      adminProducts         = require('./routes/admin_products'),
-      productsRoutes        = require('./routes/products'),
-      usersRoutes           = require('./routes/users'),
-      salesRoutes           = require('./routes/admin_sales'),
-      cartRoutes            = require('./routes/cart');
+});
 
 app.use('/admin/pages', adminPagesRoutes);
 app.use('/admin/categories', adminCategoriesRoutes);

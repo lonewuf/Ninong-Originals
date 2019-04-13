@@ -8,6 +8,7 @@
   <table class="table table-striped sorting">
       <thead>
           <tr class="home">
+              <th>Buyer</th>
               <th>Amount</th>
               <th>Time</th>
               <th></th>
@@ -16,7 +17,8 @@
       <tbody id="page-list">
         <% sales.forEach(sale => { %>
           <tr>
-          <td><%= sale.total %></td>
+          <td><%= sale.buyer %></td>
+          <td>&#8369; <%= sale.total %></td>
           <td><%= sale.date.toLocaleString() %></td>
           <td><a href="/admin/sales/<%= sale._id %>" class="btn btn-primary">Show more</a></td>
           </tr>
