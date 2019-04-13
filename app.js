@@ -7,31 +7,22 @@ const express           = require('express'),
       expressValidator  = require('express-validator'),
       fileUpload        = require('express-fileupload'),
       passport          = require('passport'),
+      paypal_config     = require('./config/paypal'),
       paypal            = require('paypal-rest-sdk');
     
 paypal.configure({
-  'mode': 'sandbox', 
-  'client_id': 'AQKFyQ5slFTCzJK4ptOlf-KApv1K4eczFM5ILeifN9FXLs8amP-k9uTj9Msj9LgTUwPbDMFTnhuDw3ZM',
-  'client_secret': 'EFLnIV3aRBUu3clfkoeQZK3YwaJ3EsZwTZGfTCXXtN9yoer42rptHtt7onnDDTilB4bq6NL9qlH59fvZ'
+  'mode': 'sandbox',
+  'client_id': paypal_config.client_id,
+  'client_secret': paypal_config.client_secret 
 });
+
 
 const app = express();
 
 
-// Call all routes
-const pagesRoutes           = require('./routes/pages'),
-      adminPagesRoutes      = require('./routes/admin_pages'),
-      adminCategoriesRoutes = require('./routes/admin_categories'),
-      adminProducts         = require('./routes/admin_products'),
-      productsRoutes        = require('./routes/products'),
-      usersRoutes           = require('./routes/users'),
-      salesRoutes           = require('./routes/admin_sales'),
-      cartRoutes            = require('./routes/cart');
-
-
 // Setup Database
 const myDb = require('./config/database');
-mongoose.connect(myDb.database);
+mongoose.connect(myDb.database, { useNewUrlParser: true });
 mongoose.connection
   .on('error', console.error.bind(console, 'Connection error: '))
   .once('open', () => console.log('Connected to MongoDB'))
@@ -45,7 +36,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(fileUpload());
 
 app.use(session({
-  secret: 'keyboard cat',
+  secret: 'my secret',
   resave: true,
   saveUninitialized: true
 //  cookie: { secure: true }
@@ -128,6 +119,18 @@ app.use((req, res, next) => {
   res.locals.user = req.user || null;
   next();
 });
+
+
+// Call all routes
+const pagesRoutes           = require('./routes/pages'),
+      adminPagesRoutes      = require('./routes/admin_pages'),
+      adminCategoriesRoutes = require('./routes/admin_categories'),
+      adminProducts         = require('./routes/admin_products'),
+      productsRoutes        = require('./routes/products'),
+      usersRoutes           = require('./routes/users'),
+      salesRoutes           = require('./routes/admin_sales'),
+      cartRoutes            = require('./routes/cart');
+
 
 app.use('/admin/pages', adminPagesRoutes);
 app.use('/admin/categories', adminCategoriesRoutes);

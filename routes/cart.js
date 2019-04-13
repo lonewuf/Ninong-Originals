@@ -149,11 +149,9 @@ router.post('/testhere', (req, res) => {
 
         // Updating Invetory
         cart.forEach((prod) => {
-          console.log(prod.title, prod.qty)
           Products.findOne({slug: prod.slug})
             .then(prod1 => {
               Products.updateOne({_id: prod1._id}, {$inc: {quantity: -(parseInt(prod.qty))}})
-                .then((product) => console.log(product))
                 .catch(err => console.log(err))    
             })
             .catch(err => console.log(err))
