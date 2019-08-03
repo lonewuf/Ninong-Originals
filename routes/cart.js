@@ -242,7 +242,7 @@ paypal.payment.create(create_payment_json, function (error, payment) {
 
 });
 
-router.get('/success', (req, res) => {
+router.get('/success:shitss', (req, res) => {
   const payerId = req.query.PayerID;
   const paymentId = req.query.paymentId;
 
