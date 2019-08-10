@@ -2,13 +2,7 @@ Gulapa Gadgets (Virtual Shopping)
 
 Technologies used:
 
-Node JS
-Express
-MongoDB
-Paypal SDK (For transaction)
-and other dependencies included in
-package.json to complete
-this project.
+Node JS, Express, MongoDB, Paypal SDK (For transaction) and other dependencies included in package.json to complete this project.
 
 Open a command line.
 Run "npm install" to install all dependencies needed for this project.
