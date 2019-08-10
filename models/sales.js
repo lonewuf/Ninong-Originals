@@ -10,7 +10,8 @@ var saleSchema = mongoose.Schema({
   buyer: {
     type: String,
     required: true
-  }
+  },
+  Paid: String
 });
 
 

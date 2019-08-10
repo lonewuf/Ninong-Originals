@@ -38,16 +38,25 @@
               <td colspan="6" align="right"><b>Total: </b>&#8369;<%= parseFloat(total).toFixed(2) %></td>
           </tr>
           <tr>
-              <td colspan="5" align="right">
-                  <a class="clearcart btn btn-danger confirmDeletion" href="/cart/clear">Clear cart</a>
+              <form action="/cart/confirm-payment" method="GET">
+              <td colspan="2" align="right">
+                <select class="dropdown" name="selectPayment">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                      My Dropdown
+                  </button>
+                  <div >
+                    <option name="none" value="none">Select Payment</option>
+                    <option name="paypal" value="paypal">Paypal</option>
+                    <option name="cod" value="cod">Cash on Delivery</option>
+                  </div>
+                 
+              </select>  
               </td>
               <td colspan="5" align="right">
-                  <a href="/cart/payment-method" class="btn btn-success">Proceed</a>
-                  <!-- <form action="/cart/pay" method="POST">
-                    <button class="btn btn-success" type="submit">Buy in Paypal</button>
-                  </form> -->
+                    <button class="btn btn-warning" type="submit">Checkout</button>
               </td>
-                
+            </form>
+
           </tr>
       </tbody>
   </table>

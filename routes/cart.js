@@ -80,6 +80,32 @@ router.get('/checkout', (req, res) => {
 
 });
 
+// Get payment method page
+router.get('/payment-method', auth.isUser, (req, res) => {
+
+  res.render('payment-method', {
+    title: 'Payment Method',
+    cart: req.session.cart
+  })
+}); 
+
+router.get('/confirm-payment', auth.isUser, (req, res) => {
+  var paymentMethod = req.query.selectPayment;
+  if(paymentMethod == 'paypal' || paymentMethod == 'cod')
+  {
+    console.log(paymentMethod + "----")
+    res.render('confirm-payment', {
+      title: 'Confirm Payment',
+      cart: req.session.cart,
+      paymentMethod: paymentMethod
+    });
+  } else {
+    console.log(paymentMethod + "----")
+    req.flash('danger', 'Please choose payment method');
+    res.redirect('/cart/payment-method');
+  } 
+});
+
 // Update product
 router.get('/update/:product', (req, res) => {
 
@@ -173,7 +199,7 @@ router.post('/testhere', (req, res) => {
           total: total,
           buyer: req.user.username
         })
-
+ 
         sales.save(err => {
           if(err)
             throw(err)
@@ -186,9 +212,51 @@ router.post('/testhere', (req, res) => {
         })
 });
 
+router.post('/cod', auth.isUser, (req,res) => {
+
+  var cart = req.session.cart;
+  var purchases = []
+  var total = 0;
+  cart.forEach(prod => {
+    total += parseFloat(prod.price).toFixed(2) * parseInt(prod.qty);
+    purchases.push(prod);
+  })
+
+  var myPromises = [];
+
+  // Updating Invetory
+  cart.forEach((prod) => {
+    console.log(prod.title, prod.qty)
+    Products.findOne({slug: prod.slug})
+      .then(prod1 => {
+        Products.updateOne({_id: prod1._id}, {$inc: {quantity: -(parseInt(prod.qty))}})
+          .then((product) => console.log(product))
+          .catch(err => console.log(err))    
+      })
+      .catch(err => console.log(err))
+  });
+
+  var sales = new Sales({
+    product: purchases,
+    total: total,
+    buyer: req.user.username,
+    Paid: 'Unpaid'
+  });
+
+  sales.save(err => {
+    if(err)
+      throw(err)
+    else {
+      delete req.session.cart;
+      req.flash('success', 'Successfully bought item(s)');
+      res.redirect('/cart/checkout');
+    }
+  });
+
+});
+
 
 router.post('/pay', auth.isUser, (req, res) => {
-
 
   var cart = req.session.cart;
   var total = 0;
@@ -226,23 +294,24 @@ router.post('/pay', auth.isUser, (req, res) => {
         },
         "description": "Hat for the best team ever"
     }]
-};
+  };
 
-paypal.payment.create(create_payment_json, function (error, payment) {
-  if (error) {
-      throw error;
-  } else {
-      for(let i = 0;i < payment.links.length;i++){
-        if(payment.links[i].rel === 'approval_url'){
-          res.redirect(payment.links[i].href);
+  paypal.payment.create(create_payment_json, function (error, payment) {
+    if (error) {
+        throw error;
+    } else {
+        for(let i = 0;i < payment.links.length;i++){
+          if(payment.links[i].rel === 'approval_url'){
+            res.redirect(payment.links[i].href);
+          }
         }
-      }
-  }
-});
+    }
+  });
 
 });
 
 router.get('/success', (req, res) => {
+
   const payerId = req.query.PayerID;
   const paymentId = req.query.paymentId;
 
@@ -299,10 +368,10 @@ router.get('/success', (req, res) => {
                 .catch(err => console.log(err))    
             })
             .catch(err => console.log(err))
-          })
+        });
 
 
-          // db.products.updateOne({title:'nova 4'}, {$inc: {quantity: 3}})
+        // db.products.updateOne({title:'nova 4'}, {$inc: {quantity: 3}})
         // console.log(myPromises, '+++++')
 
         // myPromises.forEach(myPromise => 
@@ -315,7 +384,8 @@ router.get('/success', (req, res) => {
         var sales = new Sales({
           product: purchases,
           total: total,
-          buyer: req.user.username
+          buyer: req.user.username,
+          Paid: 'Paid'
         })
 
         sales.save(err => {
@@ -327,9 +397,9 @@ router.get('/success', (req, res) => {
             res.redirect('/cart/checkout')
 
           }
-        })
+        });
     }
-});
+  });
 });
 
 router.get('/cancel', (req, res) => {

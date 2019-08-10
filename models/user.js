@@ -21,6 +21,14 @@ const UserSchema = mongoose.Schema({
     },
     admin: {
         type: Number
+    },
+    phone_number: {
+        type: String,
+        required: true
+    },
+    address: {
+        type: String,
+        required: true
     }
     
 });
