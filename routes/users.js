@@ -4,8 +4,9 @@ var passport = require('passport');
 var bcrypt = require('bcryptjs');
 var auth = require('../config/auth')
 
-// Get Users model
+// Get Models
 var User = require('../models/user');
+var Sale = require('../models/sales');
 
 // Get Auth
 var auth = require('../config/auth');
@@ -112,6 +113,30 @@ router.get('/logout', function (req, res) {
     res.redirect('/users/login');
 
 });
+
+// Get user profile
+router.get('/product-status/:username', auth.isUser, (req, res) => {
+    User.findOne({username: req.params.username}, (err, foundUser) => {
+        if(err)
+        {
+            throw(err);
+        } else 
+        {
+            console.log(req.user.id +"==="+foundUser._id)
+            Sale.find({buyer: foundUser.username})
+                .then(sales => {
+                    res.render('user-profile', 
+                    {   foundUser, 
+                        sales, 
+                        title: `${foundUser.name}'s Profile`,
+                        currentUser: req.user
+                    });
+                })
+                .catch(err => console.log(err));
+        }
+    });
+});
+
 
 // Exports
 module.exports = router;

@@ -11,7 +11,15 @@ var saleSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  Paid: String
+  Paid: String,
+  buyerID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  delivered: {
+    type: Boolean,
+    default: false
+  }
 });
 
 

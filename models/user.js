@@ -24,12 +24,18 @@ const UserSchema = mongoose.Schema({
     },
     phone_number: {
         type: String,
-        required: true
+        // required: true
     },
     address: {
         type: String,
-        required: true
-    }
+        //required: true
+    },
+    bought: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Sale'
+        }
+    ]
     
 });
 

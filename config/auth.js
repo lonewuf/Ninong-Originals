@@ -25,3 +25,12 @@ exports.isAdmin = function(req, res, next) {
         res.redirect('/users/login');
     }
 }
+
+exports.isDelivery = function(req, res, next) {
+    if (req.isAuthenticated() && res.locals.user.admin == 2) {
+        next();
+    } else {
+        req.flash('danger', 'Please log in as delivery distributor.');
+        res.redirect('/users/login');
+    }
+}

@@ -1,0 +1,34 @@
+<% include ./partials/header %>
+
+<% if(currentUser.id == foundUser._id || currentUser.admin == 1) { %>
+<div class="container">
+    <h1 class="display-4">All Items Bought</h1>
+  </div>
+  <br>
+
+  <table class="table table-striped sorting">
+      <thead>
+          <tr class="home">
+              <th>Buyer</th>
+              <th>Amount</th>
+              <th>Time</th>
+              <th></th>
+          </tr>
+      </thead>
+      <tbody id="page-list">
+        <% sales.forEach(sale => { %>
+          <tr>
+          <td><%= sale.buyer %></td>
+          <td>&#8369; <%= sale.total %></td>
+          <td><%= sale.date.toLocaleString() %></td>
+          <td><a href="/admin/sales/<%= sale._id %>" class="btn btn-primary">Show more</a></td>
+          </tr>
+          <% }); %>
+      </tbody>
+  </table>
+<% } else {%>
+  <h1>You can't see <%= foundUser.name%>'s bought items</h1>
+<% } %>
+
+
+  <% include ./partials/footer %>

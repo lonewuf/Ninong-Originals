@@ -40,7 +40,23 @@
                   </a>
               </li>
               <% if (user) { %>
-                <li class="nav-item"><a class="nav-link" href="/users/logout">Hi, <%= user.username %> ( logout )</a></li>
+                <li class="nav-item">
+                  
+                  <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Hi, <%= user.name %></a>
+                    <div class="dropdown-menu">
+                      <a href="/users/product-status/<%= user.username %>" class="dropdown-item">Product Status</a>
+                      <a href="#" class="dropdown-item">Profile</a>
+                      <a href="/users/logout" class="dropdown-item">Logout 3</a>
+                    </div>
+                  </li>
+    
+            
+
+                  <!-- <a class="nav-link" href="/users/logout">Hi, <%= user.name %> ( logout )</a> -->
+                
+                
+                </li>
                 <% } else {%>
                   <li class="nav-item"><a href="/users/login" class="nav-link">Login</a></li>
                   <li class="nav-item"><a href="/users/register" class="nav-link">Register</a></li>     
