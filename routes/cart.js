@@ -1,7 +1,10 @@
 const router = require('express').Router();
 const paypal = require('paypal-rest-sdk');
+const https   = require("https");
+const fs      = require("fs");
 const auth = require('../config/auth')
 const paypal_config = require('../config/paypal');
+
 
 // Page Model
 const Products = require('../models/products');
@@ -161,57 +164,6 @@ router.get('/clear', (req, res) => {
   
 });
 
-// Testing without paypal
-router.post('/testhere', (req, res) => {
-  var cart = req.session.cart;
-        var purchases = []
-        var total = 0;
-        cart.forEach(prod => {
-          total += parseFloat(prod.price).toFixed(2) * parseInt(prod.qty);
-          purchases.push(prod);
-        })
-
-        var myPromises = [];
-
-        // Updating Invetory
-        cart.forEach((prod) => {
-          Products.findOne({slug: prod.slug})
-            .then(prod1 => {
-              Products.updateOne({_id: prod1._id}, {$inc: {quantity: -(parseInt(prod.qty))}})
-                .catch(err => console.log(err))    
-            })
-            .catch(err => console.log(err))
-          })
-
-
-          // db.products.updateOne({title:'nova 4'}, {$inc: {quantity: 3}})
-        // console.log(myPromises, '+++++')
-
-        // myPromises.forEach(myPromise => 
-        // {
-        // myPromise
-        //   .then((product) => console.log(product, '====='))
-        //   .catch((err) => console.log(err))
-        // });
-
-        var sales = new Sales({
-          product: purchases,
-          total: total,
-          buyer: req.user.username
-        })
- 
-        sales.save(err => {
-          if(err)
-            throw(err)
-          else {
-            delete req.session.cart;
-            req.flash('success', 'Successfully bought item(s)');
-            res.redirect('/cart/checkout')
-
-          }
-        })
-});
-
 router.post('/cod', auth.isUser, (req,res) => {
 
   var cart = req.session.cart;
@@ -236,22 +188,124 @@ router.post('/cod', auth.isUser, (req,res) => {
       .catch(err => console.log(err))
   });
 
-  var sales = new Sales({
+  // =======generating invoice
+  function generateInvoice(invoice, filename, success, error) {
+    var postData = JSON.stringify(invoice);
+    var options = {
+        hostname  : "invoice-generator.com",
+        port      : 443,
+        path      : "/",
+        method    : "POST",
+        headers   : {
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(postData)
+        }
+    };
+  
+    var file = fs.createWriteStream(filename);
+  
+    var req = https.request(options, function(res) {
+        res.on('data', function(chunk) {
+            file.write(chunk);
+        })
+        .on('end', function() {
+            file.end();
+  
+            if (typeof success === 'function') {
+                success();
+            }
+        });
+    });
+    req.write(postData);
+    req.end();
+  
+    if (typeof error === 'function') {
+        req.on('error', error);
+    }
+  }
+  //=====
+
+  // var sales = new Sales({
+  //   product: purchases,
+  //   total: total,
+  //   buyer: req.user.username,
+  //   buyerName: req.user.name,
+  //   phone_number: "phone number",
+  //   address: "Dummy address",
+  //   paid: false
+  // });
+
+  // sales.save(err => {
+  //   if(err)
+  //     throw(err)
+  //   else {
+  //     delete req.session.cart;
+  //     req.flash('success', 'Successfully bought item(s)');
+  //     res.redirect('/cart/checkout');
+  //   }
+  // });
+
+  var sales ={
     product: purchases,
     total: total,
     buyer: req.user.username,
-    Paid: 'Unpaid'
-  });
+    buyerName: req.user.name,
+    phone_number: "phone number",
+    address: "Dummy address",
+    paid: false
+  };
 
-  sales.save(err => {
-    if(err)
+
+
+  Sales.create(sales, (err, createdSale) => {
+    if(err) {
       throw(err)
-    else {
-      delete req.session.cart;
-      req.flash('success', 'Successfully bought item(s)');
-      res.redirect('/cart/checkout');
+    } else {
+      console.log(createdSale)
+      var invoice = {}
+
+      var invoicePaymentTerms = createdSale.paid ? "Paypal - Paid" : "COD - Unpaid"
+      var invoiceItems = []
+
+      createdSale.product.forEach(product => {
+        invoiceItems.push({
+          name: product.title,
+          quantity: product.qty,
+          unit_cost: parseFloat(product.price).toFixed(2)
+        })
+      })
+
+      invoice = {
+        logo: "http://invoiced.com/img/logo-invoice.png",
+        from: "Invoiced\n701 Brazos St\nAustin, TX 78748",
+        to: createdSale.buyerName,
+        currency: "php",
+        number: createdSale._id,
+        payment_terms: invoicePaymentTerms,
+        items: invoiceItems,
+        subtotal: 0,
+        // fields: {
+        //     tax: "%"
+        // },
+        // tax: 5,
+        notes: `Thanks for availing our product Sir/Maam ${createdSale.buyerName}`,
+        terms: null
+      };
+    
+      generateInvoice(invoice, __dirname + `/files/invoice-${createdSale._id}.pdf`, () => {
+        console.log(`Saved invoice`);
+        delete req.session.cart;
+        req.flash('success', 'Successfully bought item(s)');
+        res.redirect('/cart/checkout');
+      }, function(error) {
+          console.error(error);
+      });
+
+      
     }
-  });
+  })
+
+
 
 });
 
@@ -292,7 +346,7 @@ router.post('/pay', auth.isUser, (req, res) => {
             "currency": "PHP",
             "total": total
         },
-        "description": "Hat for the best team ever"
+        "description": ""
     }]
   };
 
@@ -342,6 +396,41 @@ router.get('/success', (req, res) => {
     }]
   };
 
+  function generateInvoice(invoice, filename, success, error) {
+    var postData = JSON.stringify(invoice);
+    var options = {
+        hostname  : "invoice-generator.com",
+        port      : 443,
+        path      : "/",
+        method    : "POST",
+        headers   : {
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(postData)
+        }
+    };
+  
+    var file = fs.createWriteStream(filename);
+  
+    var req = https.request(options, function(res) {
+        res.on('data', function(chunk) {
+            file.write(chunk);
+        })
+        .on('end', function() {
+            file.end();
+  
+            if (typeof success === 'function') {
+                success();
+            }
+        });
+    });
+    req.write(postData);
+    req.end();
+  
+    if (typeof error === 'function') {
+        req.on('error', error);
+    }
+  }
+
   paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
     if (error) {
         console.log(error.response);
@@ -381,23 +470,78 @@ router.get('/success', (req, res) => {
         //   .catch((err) => console.log(err))
         // });
 
-        var sales = new Sales({
+        // console.log(req.user)
+        // var sales = new Sales({
+        //   product: purchases,
+        //   total: total,
+        //   buyer: req.user.username,
+        //   buyerName: req.user.name,
+        //   phone_number: "phone number",
+        //   address: "Dummy address",
+        //   paid: true
+        // })
+
+        var sales ={
           product: purchases,
           total: total,
           buyer: req.user.username,
-          Paid: 'Paid'
+          buyerName: req.user.name,
+          phone_number: "phone number",
+          address: "Dummy address",
+          paid: true
+        };
+      
+        Sales.create(sales, (err, createdSale) => {
+          if(err) {
+            throw(err)
+          } else {
+            console.log(createdSale)
+            var invoice = {}
+      
+            var invoicePaymentTerms = createdSale.paid ? "Paypal - Paid" : "COD - Unpaid"
+            var invoiceItems = []
+      
+            createdSale.product.forEach(product => {
+              invoiceItems.push({
+                name: product.title,
+                quantity: product.qty,
+                unit_cost: parseFloat(product.price).toFixed(2)
+              })
+            })
+      
+            invoice = {
+              logo: null,
+              from: "Invoiced\n701 Brazos St\nAustin, TX 78748",
+              to: createdSale.buyerName,
+              currency: "php",
+              number: createdSale._id,
+              payment_terms: invoicePaymentTerms,
+              items: invoiceItems,
+              subtotal: 0,
+              balance: 0,
+              amount_paid: createdSale.total,
+              notes: `Thanks for availing our product Sir/Maam ${createdSale.buyerName}`,
+              terms: null
+              // fields: {
+              //     tax: "%"
+              // },
+              // tax: 5,
+              
+            };
+          
+            generateInvoice(invoice, __dirname + `/files/invoice-${createdSale._id}.pdf`, () => {
+              console.log(`Saved invoice`);
+              delete req.session.cart;
+              req.flash('success', 'Successfully bought item(s)');
+              res.redirect('/cart/checkout');
+            }, function(error) {
+                console.error(error);
+            });
+      
+            
+          }
         })
 
-        sales.save(err => {
-          if(err)
-            throw(err)
-          else {
-            delete req.session.cart;
-            req.flash('success', 'Successfully bought item(s)');
-            res.redirect('/cart/checkout')
-
-          }
-        });
     }
   });
 });

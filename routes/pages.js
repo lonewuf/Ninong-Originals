@@ -10,6 +10,7 @@ router.get('/', (req, res) => {
   Page.findOne({slug: 'home'}, (err, foundPage) => {
     if(err) throw(err);
 
+    
     res.render('index', {
       title: foundPage.title,
       content: foundPage.content

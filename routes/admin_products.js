@@ -127,7 +127,6 @@ router.post('/add-product', auth.isAdmin, (req, res) => {
       } else {
         
         var formatPrice = parseFloat(price).toFixed(2);
-        console.log(formatPrice, "========")
         var product = new Product({
           title: title,
           slug: slug,
@@ -171,7 +170,6 @@ router.post('/add-product', auth.isAdmin, (req, res) => {
             }
 
             req.flash('success', 'Product added');
-            console.log('sad')
             res.redirect('/admin/products');
           }
         });

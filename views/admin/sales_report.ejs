@@ -1,11 +1,11 @@
 <%- include('../partials/adminheader') %>
 
   <div class="container">
-    <h1 class="display-4">All Sales</h1>
+    <h1 class="display-4">Sales Report</h1>
   </div>
   <br>
 
-  <form action="/admin/sales" method="GET">
+  <form action="/admin/sales/sales-report" method="GET">
     <div class="mx-auto row">
       <div class="col-1"></div>
       <div class="col-4">
@@ -39,42 +39,42 @@
       </div>
     </div>
   </form>
-  <%if(!!!sales) {%>
-    <p class="display-4 align-text-center">There are no transaction for this searched date</p>
-  <% } else { %>
+
   <table class="table table-hover table-striped sorting">
-      <thead>
-          <tr class="home">
-              <th>Buyer</th>
-              <th>Amount</th>
-              <th>Time</th>
-              <th>Is Paid ?</th>
-              <th>Is Delivered ?</th>
-              <th>Action</th>
-          </tr>
-      </thead>
-      <tbody id="page-list">
-        <% sales.forEach(sale => { %>
+    <thead>
+        <tr class="home">
+          <th>Buyer</th>
+          <th>Amount</th>
+          <th>Time</th>
+          <th>Is Paid ?</th>
+          <th>Is Delivered ?</th>
+          <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="page-list">
+      <% sales.forEach(sale => { %>
+        <%if(sale.paid) { %>
           <tr>
-          <td><%= sale.buyer %></td>
-          <td>&#8369; <%= sale.total.toFixed(2) %></td>
-          <td><%= sale.date.toLocaleString() %></td>
-          <%if(sale.paid){%>
-            <td class="text-success">Already Paid</td>
-          <% } else {%>
-            <td class="text-danger">Not Yet</td>
-          <% } %>
-          <%if(sale.isDelivered){%>
-            <td class="text-success">Already Delivered</td>
-          <% } else {%>
-            <td class="text-danger">Not Yet</td>
-          <% } %>
-          <td><a href="/admin/sales/<%= sale._id %>" class="btn btn-primary">Show more</a></td>
+            <td><%= sale.buyer %></td>
+            <td>&#8369; <%= sale.total.toFixed(2) %></td>
+            <td><%= sale.date.toLocaleString() %></td>
+            <%if(sale.paid){%>
+              <td class="text-success">Already Paid</td>
+            <% } else {%>
+              <td class="text-danger">Not Yet</td>
+            <% } %>
+            <%if(sale.isDelivered){%>
+              <td class="text-success">Already Delivered</td>
+            <% } else {%>
+              <td class="text-danger">Not Yet</td>
+            <% } %>
+            <td><a href="/admin/sales/<%= sale._id %>" class="btn btn-primary">Show more</a></td>
           </tr>
-          <% }); %>
-      </tbody>
+        <% } %>
+      <% }); %>
+    </tbody>
   </table>
-  <% } %>
+  <h1 class="display-4">Total: <%= total %></h1>
   
 
 

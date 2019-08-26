@@ -10,13 +10,29 @@ var saleSchema = mongoose.Schema({
   buyer: {
     type: String,
     required: true
+  }, 
+  buyerName: {
+    type: String
   },
-  Paid: String,
+  phone_number: {
+    type: String
+  },
+  paid: {
+    type: Boolean,
+    default: false
+  },
   buyerID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  delivered: {
+  isDelivered: {
+    type: Boolean,
+    default: false
+  },
+  address: {
+    type: String
+  },
+  invoiceSaved: {
     type: Boolean,
     default: false
   }

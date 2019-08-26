@@ -5,10 +5,49 @@
     <h4>Buyer: <%= sales.buyer %></h4>
   </div>
   <br>
+  
+  <%if(!sales.isDelivered) {%>
+    <p>Click if items are delivered</p>
+    <form class="mb-3" action="/admin/sales/<%= sales._id %>/delivered" method="post">
+      <button type="submit" class="btn btn-outline-success">Delivered</button>
+    </form>
+  <% } else { %>
+    <h1 class="display-4 text-success">This item is already delivered</h1>
+  <% } %>
+  <%if(!sales.paid) {%>
+    <p>Click if already paid</p>
+    <form class="mb-3" action="/admin/sales/<%= sales._id %>/paid" method="post">
+      <button type="submit" class="btn btn-success">Paid</button>
+    </form>
+  <% } else { %>
+    <h1 class="display-4 text-success">This item is already paid</h1>
+  <% } %>
+  <table class="my-5 table table-bordered">
+    <thead>
+        <tr>
+            <th>Control Number</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Phone Number</th>
+            <th>Total price</th>
+            <th>Invoice</th>
+        </tr>
+    </thead> 
+    <tbody>
+        <tr>
+            <td><%= sales._id %></td>
+            <td><%= sales.buyerName %></td>
+            <td><%= sales.address %></td>
+            <td><%= sales.phone_number %></td>
+            <td>&#8369; <%= sales.total.toFixed(2) %></td>
+            <td><a target="_blank" href="/admin/sales/<%= sales._id %>/show-invoice" class="btn btn-primary">Show invoice</a></td>
+        </tr>
+    </tbody>
+</table>
 
-    
+
   <!-- STRIPED TABLE -->
-  <table class="table table-striped alignmid ">
+  <table class="table table-hover table-striped alignmid ">
       <thead>
           <tr class="home">
               <th>Product</th>
@@ -37,5 +76,4 @@
       </tbody>
   </table>
 
-  
 <%- include('../partials/adminfooter') %>
