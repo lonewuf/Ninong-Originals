@@ -2,5 +2,5 @@ node_modules
 npm-debug.log
 .DS_Store
 /*.env
-public
+public/product_images/
 routes/files
