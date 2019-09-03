@@ -23,7 +23,7 @@ const auth = require('./config/auth');
 
 // Setup Database
 const myDb = require('./config/database');
-mongoose.connect(myDb.databaseProd, { useNewUrlParser: true });
+mongoose.connect(myDb.databaseDev, { useNewUrlParser: true });
 mongoose.connection
   .on('error', console.error.bind(console, 'Connection error: '))
   .once('open', () => console.log('Connected to MongoDB'))
@@ -145,12 +145,12 @@ app.use('/cart', cartRoutes);
 app.use('/users', usersRoutes);
 app.use('/', pagesRoutes);
 
-var server_host = process.env.YOUR_HOST || '0.0.0.0';
+var server_host = process.env.OPENSHIFT_NODEJS_IP || process.env.YOUR_HOST || '0.0.0.0';
 
 // Choose Port
-const port = process.env.PORT || 2000 ;
+const port =  process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 2000 ;
 
 // Start Server
 app.listen(port, server_host,() => {
-  console.log(`Server started on ${port}`);
+  console.log(`Server started on ${server_host} ${port}`);
 });
