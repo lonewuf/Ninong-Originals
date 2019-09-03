@@ -14,10 +14,70 @@ const Sales = require('../models/sales');
 router.get('/add/:product', (req, res) => {
 
   var productSlug = req.params.product;
+  console.log(req.params.product)
 
   Products.findOne({slug: productSlug}, (err, foundProduct) => {
     if(err) throw(err);
+    console.log(foundProduct)
 
+    if(foundProduct.quantity == 0){
+      console.log('Error')
+    }else if(typeof req.session.cart === "undefined") {
+      req.session.cart = [];
+      req.session.cart.push({
+        title: productSlug,
+        qty: 1,
+        price: parseFloat(foundProduct.price).toFixed(2),
+        image: `/product_images/${foundProduct._id}/${foundProduct.image}`,
+        category: foundProduct.category,
+        slug: foundProduct.slug
+      });
+    } else {
+      var cart = req.session.cart;
+      var newItem = true;
+
+      for (let i = 0; i < cart.length; i++) {
+        if(cart[i].title == productSlug ) {
+          cart[i].qty++;
+          newItem= false;
+          if(foundProduct.quantity < cart[i].qty) {
+            cart[i].qty--;
+          }
+          break;
+        } 
+      }
+
+      if(newItem) {
+        cart.push({
+          title: productSlug,
+          qty: 1,
+          price: parseFloat(foundProduct.price).toFixed(2),
+          image: `/product_images/${foundProduct._id}/${foundProduct.image}`,
+          category: foundProduct.category,
+        slug: foundProduct.slug
+        });
+      }
+    }
+
+    if(foundProduct.quantity){
+      req.flash('success', 'Product Added');
+    } else {
+      req.flash('danger', 'Sorry out of stock');
+    }
+    res.redirect('back');
+  });
+});
+
+
+// Get add product to cart
+router.get('/add-by-id/:id', (req, res) => {
+
+  var productID = req.params.id;
+
+  Products.findOne({_id: productID}, (err, foundProduct) => {
+    if(err) throw(err);
+    
+    const productSlug = foundProduct.slug
 
     if(foundProduct.quantity == 0){
       console.log('Error')
@@ -84,7 +144,7 @@ router.get('/checkout', (req, res) => {
 });
 
 // Get payment method page
-router.get('/payment-method', auth.isUser, (req, res) => {
+router.get('/payment-method', (req, res) => {
 
   res.render('payment-method', {
     title: 'Payment Method',
@@ -116,6 +176,7 @@ router.get('/update/:product', (req, res) => {
   var cart = req.session.cart;
   var action = req.query.action;
 
+  console.log(action)
   
 
   Products.findOne({slug: slug}, (err, foundProduct) => {
@@ -164,7 +225,13 @@ router.get('/clear', (req, res) => {
   
 });
 
+// COD
 router.post('/cod', auth.isUser, (req,res) => {
+
+  if(!req.session.cart) {
+    req.flash('danger', 'Your cart is empty')
+    res.redirect('/');
+  }
 
   var cart = req.session.cart;
   var purchases = []
@@ -245,13 +312,14 @@ router.post('/cod', auth.isUser, (req,res) => {
   //   }
   // });
 
-  var sales ={
+  var sales = {
     product: purchases,
     total: total,
     buyer: req.user.username,
     buyerName: req.user.name,
-    phone_number: "phone number",
-    address: "Dummy address",
+    phone_number: req.user.phone_number,
+    address: req.user.address,
+    totalWithShipping: (total + 100),
     paid: false
   };
 
@@ -281,9 +349,10 @@ router.post('/cod', auth.isUser, (req,res) => {
         to: createdSale.buyerName,
         currency: "php",
         number: createdSale._id,
+        shipping: parseFloat(100).toFixed(2),
+        amount_paid: 0,
         payment_terms: invoicePaymentTerms,
         items: invoiceItems,
-        subtotal: 0,
         // fields: {
         //     tax: "%"
         // },
@@ -309,14 +378,21 @@ router.post('/cod', auth.isUser, (req,res) => {
 
 });
 
-
+// Paypal
 router.post('/pay', auth.isUser, (req, res) => {
 
   var cart = req.session.cart;
+
+  if(!req.session.cart) {
+    req.flash('danger', 'Your cart is empty')
+    res.redirect('/');
+  }
+
   var total = 0;
   var myPurchases = [];
   var p = 0
-  
+  var shippingFee = 100;
+
   cart.forEach(product => {
     p = +(parseFloat(product.price).toFixed(2) * product.qty)
     total += p;
@@ -344,7 +420,11 @@ router.post('/pay', auth.isUser, (req, res) => {
         },
         "amount": {
             "currency": "PHP",
-            "total": total
+            "total": (total + shippingFee),
+            "details": {
+              "subtotal" : total,
+              "shipping": shippingFee
+            }
         },
         "description": ""
     }]
@@ -459,35 +539,15 @@ router.get('/success', (req, res) => {
             .catch(err => console.log(err))
         });
 
-
-        // db.products.updateOne({title:'nova 4'}, {$inc: {quantity: 3}})
-        // console.log(myPromises, '+++++')
-
-        // myPromises.forEach(myPromise => 
-        // {
-        // myPromise
-        //   .then((product) => console.log(product, '====='))
-        //   .catch((err) => console.log(err))
-        // });
-
-        // console.log(req.user)
-        // var sales = new Sales({
-        //   product: purchases,
-        //   total: total,
-        //   buyer: req.user.username,
-        //   buyerName: req.user.name,
-        //   phone_number: "phone number",
-        //   address: "Dummy address",
-        //   paid: true
-        // })
-
         var sales ={
           product: purchases,
           total: total,
           buyer: req.user.username,
           buyerName: req.user.name,
-          phone_number: "phone number",
-          address: "Dummy address",
+          phone_number: req.user.phone_number,
+          address: req.user.address,
+          city: req.user.city,
+          totalWithShipping: (total + 100),
           paid: true
         };
       
@@ -507,20 +567,20 @@ router.get('/success', (req, res) => {
                 quantity: product.qty,
                 unit_cost: parseFloat(product.price).toFixed(2)
               })
-            })
+            }) 
       
             invoice = {
               logo: null,
-              from: "Invoiced\n701 Brazos St\nAustin, TX 78748",
+              from: `Invoiced\n${req.user.address}\n${req.user.city}`,
               to: createdSale.buyerName,
               currency: "php",
               number: createdSale._id,
               payment_terms: invoicePaymentTerms,
               items: invoiceItems,
-              subtotal: 0,
+              shipping: parseFloat(100).toFixed(2),  
+              amount_paid: createdSale.totalWithShipping,
               balance: 0,
-              amount_paid: createdSale.total,
-              notes: `Thanks for availing our product Sir/Maam ${createdSale.buyerName}`,
+              notes: `Thank you for buying in our store Sir/Maam ${createdSale.buyerName}.`,
               terms: null
               // fields: {
               //     tax: "%"
@@ -547,7 +607,7 @@ router.get('/success', (req, res) => {
 });
 
 router.get('/cancel', (req, res) => {
-  req.flash('danger', 'Transaction is cancelles');
+  req.flash('danger', 'Transaction is cancelled');
   res.redirect('/cart/checkout');
 });
 

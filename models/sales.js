@@ -35,7 +35,12 @@ var saleSchema = mongoose.Schema({
   invoiceSaved: {
     type: Boolean,
     default: false
-  }
+  },
+  shipping_fee: {
+    type: Number,
+    default: 100
+  },
+  totalWithShipping: Number
 });
 
 

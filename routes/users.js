@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
-const auth = require('../config/auth');
+const auth = require('../config/auth'); 
 const userAuth = require('../config/userauths');
 
 // Get Models
@@ -19,15 +19,22 @@ router.get('/register', auth.isLoggedIn, function (req, res) {
 
 });
 
+// Register Customer
 router.post('/register', auth.isLoggedIn,function (req, res) {
 
     var name = req.body.name;
     var email = req.body.email;
     var username = req.body.username;
+    var address = req.body.address;
+    var phone_number = req.body.phone_num;
+    var city = req.body.city;
     var password = req.body.password;
     var password2 = req.body.password2;
 
     req.checkBody('name', 'Name is required!').notEmpty();
+    req.checkBody('city', 'City is required!').notEmpty();
+    req.checkBody('phone_num', 'Phone Number is required!').notEmpty();
+    req.checkBody('address', 'address is required!').notEmpty();
     req.checkBody('email', 'Email is required!').isEmail();
     req.checkBody('username', 'Username is required!').notEmpty();
     req.checkBody('password', 'Password is required!').notEmpty();
@@ -50,11 +57,17 @@ router.post('/register', auth.isLoggedIn,function (req, res) {
                 req.flash('danger', 'Username exists, choose another!');
                 res.redirect('/users/register');
             } else {
+
+                
+
                 var user = new User({
                     name: name,
                     email: email,
                     username: username,
                     password: password,
+                    address:address,
+                    city: city,
+                    phone_number: phone_number,
                     admin: 0
                 });
 
@@ -71,6 +84,167 @@ router.post('/register', auth.isLoggedIn,function (req, res) {
                             } else {
                                 req.flash('success', 'You are now registered!');
                                 res.redirect('/users/login')
+                            }
+                        });
+                    });
+                });
+            }
+        });
+    }
+
+});
+
+// Register Customer
+router.post('/register-from-billing',function (req, res) {
+
+    var name = req.body.name;
+    var email = req.body.email;
+    var username = req.body.username;
+    var address = req.body.address;
+    var phone_number = req.body.phone_num;
+    var city = req.body.city;
+    var password = req.body.password;
+    var password2 = req.body.password2;
+
+    req.checkBody('name', 'Name is required!').notEmpty();
+    req.checkBody('city', 'City is required!').notEmpty();
+    req.checkBody('phone_num', 'Phone Number is required!').notEmpty();
+    req.checkBody('address', 'address is required!').notEmpty();
+    req.checkBody('email', 'Email is required!').isEmail();
+    req.checkBody('username', 'Username is required!').notEmpty();
+    req.checkBody('password', 'Password is required!').notEmpty();
+    req.checkBody('password2', 'Passwords do not match!').equals(password);
+
+    var errors = req.validationErrors();
+
+    if (errors) {
+        res.render('payment-method', {
+            errors: errors,
+            user: null,
+            cart: req.session.cart,
+            title: 'Register'
+        }); 
+    } else {
+        User.findOne({username: username}, function (err, user) {
+            if (err)
+                console.log(err);
+
+            if (user) {
+                req.flash('danger', 'Username exists, choose another!');
+                res.redirect('/cart/payment-method');
+            } else {
+                
+                var user = new User({
+                    name: name,
+                    email: email,
+                    username: username,
+                    password: password,
+                    address:address,
+                    city: city,
+                    phone_number: phone_number,
+                    admin: 0
+                });
+
+                bcrypt.genSalt(10, function (err, salt) {
+                    bcrypt.hash(user.password, salt, function (err, hash) {
+                        if (err)
+                            console.log(err);
+
+                        user.password = hash;
+
+                        user.save(function (err) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                req.flash('success', 'You are now registered please login');
+                                res.redirect('/cart/payment-method')
+                            }
+                        });
+                    });
+                });
+            }
+        });
+    }
+
+});
+
+// Register new admin GET
+router.get('/register-admin', auth.isAdmin, function (req, res) {
+
+    res.render('admin/register', {
+        title: 'Register new admin'
+    });
+
+});
+
+// Register new admin POST
+router.post('/register-admin', auth.isAdmin,function (req, res) {
+
+    var name = req.body.name;
+    var email = req.body.email;
+    var username = req.body.username;
+    var address = req.body.address;
+    var phone_number = req.body.phone_num;
+    var city = req.body.city;
+    var password = req.body.password;
+    var password2 = req.body.password2;
+    var admin = req.body.admin;
+
+
+    if(admin == null) {
+        req.flash('danger', 'Select type of admin')
+        res.redirect('back')
+    }
+
+    req.checkBody('name', 'Name is required!').notEmpty();
+    req.checkBody('address', 'Address is required!').notEmpty();
+    req.checkBody('phone_num', 'Phone Number is required!').notEmpty();
+    req.checkBody('city', 'City is required!').notEmpty();
+    req.checkBody('email', 'Email is required!').isEmail();
+    req.checkBody('username', 'Username is required!').notEmpty();
+    req.checkBody('password', 'Password is required!').notEmpty();
+    req.checkBody('password2', 'Passwords do not match!').equals(password);
+
+    var errors = req.validationErrors();
+
+    if (errors) {
+        res.render('admin/register', {
+            errors: errors,
+            title: 'Register'
+        }); 
+    } else {
+        User.findOne({username: username}, function (err, user) {
+            if (err)
+                console.log(err);
+
+            if (user) {
+                req.flash('danger', 'Username exists, choose another!');
+                res.redirect('back');
+            } else {
+                var user = new User({
+                    name: name,
+                    email: email,
+                    username: username,
+                    password: password,
+                    address: address,
+                    phone_number: phone_number,
+                    city: city,
+                    admin: admin
+                });
+
+                bcrypt.genSalt(10, function (err, salt) {
+                    bcrypt.hash(user.password, salt, function (err, hash) {
+                        if (err)
+                            console.log(err);
+
+                        user.password = hash;
+
+                        user.save(function (err) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                req.flash('success', 'New admin is now registered');
+                                res.redirect('/admin')
                             }
                         });
                     });
@@ -101,6 +275,16 @@ router.post('/login', auth.isLoggedIn, function (req, res, next) {
     
 });
 
+router.post('/login-from-billing', auth.isLoggedIn, function (req, res, next) {
+
+    passport.authenticate('local', {
+        successRedirect: '/cart/payment-method',
+        failureRedirect: '/cart/payment-method',
+        failureFlash: true
+    })(req, res, next);
+    
+});
+
 /*
  * GET logout
  */
@@ -112,13 +296,37 @@ router.get('/logout', function (req, res) {
 
 });
 
+
+
 // Get user profile
+router.get('/profile/:username', auth.isUser, (req, res) => {
+    User.findOne({username: req.params.username})
+        .then(foundUser => {
+
+            res.render('user-profile', {
+                foundUser,
+                title: `${foundUser.name}'s Profile`
+            })
+        })
+        .catch(err => {
+            req.flash('danger', 'User is not present')
+            res.redirect('/');
+        });
+});
+
+// Get user product status
 router.get('/product-status/:username', auth.isUser, (req, res) => {
     User.findOne({username: req.params.username})
         .then(foundUser => {
+
+            if(foundUser.username != req.user.username) {
+                req.flash('danger', 'You can\'t do that action')
+                req.redirect('back')
+            }
+
             Sale.find({buyer: foundUser.username})
                 .then(sales => {
-                    res.render('user-profile', 
+                    res.render('user-product-status', 
                     {   foundUser, 
                         sales, 
                         title: `${foundUser.name}'s Profile`,
@@ -133,18 +341,83 @@ router.get('/product-status/:username', auth.isUser, (req, res) => {
         });
 });
 
-router.get('/profile/:username', auth.isUser, (req, res) => {
+// Get edit user profile
+router.get('/profile/:username/edit', auth.isUser, (req, res) => {
     User.findOne({username: req.params.username})
         .then(foundUser => {
-
-            res.render('profile', {
+            if(foundUser.username != req.user.username) {
+                req.flash('danger', 'You can\'t do that action')
+                req.redirect('back')
+            }
+            res.render('edit-user-profile', {
                 foundUser,
                 title: `${foundUser.name}'s Profile`
             })
         })
-        .catch(err => {
+        .catch(err => { 
             req.flash('danger', 'User is not present')
             res.redirect('/');
+        });
+});
+
+// Post edit user profile
+router.post('/profile/:username/edit', auth.isUser, (req, res) => {
+
+    
+    var name = req.body.name;
+    var email = req.body.email;
+    var address = req.body.address;
+    var city = req.body.city;
+    var phone_number = req.body.phone_num;
+
+
+    req.checkBody('name', 'Name is required!').notEmpty();
+    req.checkBody('city', 'City / Municipality is required!').notEmpty();
+    req.checkBody('address', 'Address is required!').notEmpty();
+    req.checkBody('email', 'Email is required!').isEmail();
+ 
+
+    User.findOne({username: req.params.username})
+        .then(foundUser => {
+            if(foundUser.username != req.user.username) {
+                req.flash('danger', 'You can\'t do that action')
+                req.redirect('back')
+            }
+
+            var errors = req.validationErrors();
+
+            if (errors) {
+                res.render('edit-user-profile', {
+                    errors: errors,
+                    title: `Edit Profile`
+                }); 
+            } else {
+
+                var updateUser = {
+                    name: name,
+                    email: email,
+                    address:address,
+                    city: city,
+                    phone_number: phone_number,
+                }
+
+                User.updateOne({username: req.params.username}, updateUser)
+                    .then(foundUser2 => {
+                        req.flash('success', 'Profile Updated')
+                        res.redirect(`/users/profile/${req.user.username}`);
+                    })
+                    .catch(err => console.log(err))
+
+            }
+
+
+            User.updateOne({username: req.params.username})
+                .then(foundUser2 => {
+                    
+                })
+        })
+        .catch(err => {
+            console.log(err)
         });
 });
 
@@ -234,7 +507,7 @@ router.post('/forgot-password/:id/:change_pass_id', (req, res) => {
     ForgotPassword.findById(change_pass_id)
         .then(foundForgotPW => {
             if (errors) {
-                req.flash('danger', 'Make sure that fill up all the and Passwords should match')
+                req.flash('danger', 'Make sure that fill up all fields and Password should match')
                 res.redirect(`/users/forgot-password/${id}/${change_pass_id}`);
             }
             bcrypt.genSalt(10, function (err, salt) {

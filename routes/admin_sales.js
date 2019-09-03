@@ -19,6 +19,7 @@ router.get('/', auth.isAdmin, (req, res) => {
       Sales.find({"date" : {"$gte": new Date(`${from}`), "$lt" : new Date(`${to}`) }, "paid":true }, (err, foundSales) => {
         if(err)
           throw(err);
+        console.log(foundSales)
         checkDate = true
         res.render('admin/all_sales', {
           sales: foundSales,

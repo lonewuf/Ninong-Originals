@@ -5,7 +5,7 @@ const Page = require('../models/pages');
 const auth = require('../config/auth')
 
 
-router.get('/', auth.isAdmin, (req, res) => {
+router.get('/', auth.allAdmin, (req, res) => {
   Page.find({}).sort({sorting: 1}).exec((err, pages) => {
     if(err) throw(err);
     else {

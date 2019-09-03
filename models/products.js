@@ -24,7 +24,14 @@ var productSchema = mongoose.Schema({
     required: true
   },
   rating: {
-    type: Number
+    num_rated: {
+      type: Number,
+      default: 0
+    },
+    total_rating: {
+      type: Number,
+      default: 0
+    }
   },
   times_sold: {
     type: Number

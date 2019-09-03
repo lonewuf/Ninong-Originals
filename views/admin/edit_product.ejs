@@ -35,10 +35,49 @@
       <input type="text" name="price" id="price" value="<%= price %>" class="form-control form-control-sm" placeholder="Price">
     </div>
     
-    <div class="form-group">
+    <!-- <div class="form-group">
       <label for="price">Quantity</label>
       <input type="text" name="quantity" id="quantity" value="<%= quantity %>" class="form-control form-control-sm" placeholder="Quantity">
+    </div> -->
+
+    <!-- <div class="input-group">
+        <span class="input-group-addon"><%= quantity %></span>
+        <input type="text" name="quantity" class="form-control" placeholder="Add stock / remove stock">
+    </div> -->
+
+    <!-- ACCORDION -->
+    <p>Quantity: <%= quantity %></p>
+    <div id="accordion" role="tablist">
+      <div class="card">
+        <div class="card-header" role="tab" id="heading">
+          <h5 class="mb-0"><a href="#collapse1" data-parent="#accordion" data-toggle="collapse">
+            Add Stock
+          </a></h5>
+        </div>
+
+        <div id="collapse1" class="collapse show">
+          <div class="card-body">
+            <input type="text" id="quantityAdd" name="quantityAdd" class="form-control" placeholder="Add Stock">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" role="tab" id="heading">
+          <h5 class="mb-0"><a href="#collapse2" data-parent="#accordion" data-toggle="collapse">
+            Remove Stock
+          </a></h5>
+        </div>
+
+        <div id="collapse2" class="collapse">
+          <div class="card-body">
+              <input type="text" id="quantityRemove" name="quantityRemove" class="form-control" placeholder="Remove Stock">
+          </div>
+        </div>
+      </div>
     </div>
+  
+
 
     <div class="form-group">
         <label for="">Current Image</label>

@@ -1,0 +1,78 @@
+<%- include('../partials/adminheader') %>
+
+<h1 class="display-4" ><%= title %></h1>
+
+<form method="post" action="/users/register-admin">
+
+    <div class="form-group">
+        <label>Name</label>
+        <input required type="text" name="name" class="form-control" placeholder="Name">
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <input required type="text" name="email" class="form-control" placeholder="Email">
+    </div>
+    
+    <div class="form-group">
+      <label >Select City / Municipality</label>
+      <select name="city" class="form-control" id="city">
+          <option value="Caloocan">Caloocan</option>
+          <option value="Las Piñas">Las Piñas</option>
+          <option value="Makati">Makati</option>
+          <option value="Malabon">Malabon</option>
+          <option value="Mandaluyong">Mandaluyong</option>
+          <option value="Manila">Manila</option>
+          <option value="Marikina">Marikina</option>
+          <option value="Muntinlupa">Muntinlupa</option>
+          <option value="Navotas">Navotas</option>
+          <option value="Parañaque">Parañaque</option>
+          <option value="Pasay">Pasay</option>
+          <option value="Pasig">Pasig</option>
+          <option value="Pateros (Municipality)">Pateros (Municipality)</option>
+          <option value="Quezon City">Quezon City</option>
+          <option value="San Juan">San Juan</option>
+          <option value="Taguig">Taguig</option>
+          <option value="Valenzuela">Valenzuela</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Address</label>
+      <input type="text" required name="address" class="form-control" placeholder="Address">
+    </div>
+
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="text" minlength="11" maxlength="11" name="phone_num" class="form-control" placeholder="Phone Number eg. 09999999999">
+    </div>    
+    
+    <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" required class="form-control" placeholder="Username">
+    </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password"  minlength="6" required name="password" class="form-control"  placeholder="Password">
+    </div>
+    
+    <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" name="password2" required class="form-control"  placeholder="Confirm Password">
+    </div>
+
+    <div class="form-group">
+      <label >Admin type</label>
+      <select name="admin" class="form-control" id="barangay">
+        <option >Select Admin type</option>
+        <option value="2">Sales</option>
+        <option value="3">Inventory</option>
+        <option value="4">Delivery</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-default">Register</button>
+</form>
+
+<%- include('../partials/adminfooter') %>

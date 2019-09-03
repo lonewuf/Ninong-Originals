@@ -1,95 +1,222 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html class="no-js" lang="zxx">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title><%= title %></title>
-  <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/fontawesome-all.css">
-  <link rel="stylesheet" href="/css/jquery.fancybox.min.css">
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<title><%= title %></title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Favicons -->
+	<link rel="shortcut icon" href="/images/favicon.ico">
+	<link rel="apple-touch-icon" href="/images/icon.png">
+
+	<!-- Google font (font-family: 'Roboto', sans-serif; Poppins ; Satisfy) -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"> 
+	<link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,500,600,600i,700,700i,800" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet"  type="text/css" href="/css/bootstrap.min.css">
+	<link rel="stylesheet"  type="text/css" href="/css/plugins.css">
+	<link rel="stylesheet"  type="text/css" href="/css/style2.css">
+
+	<!-- Cusom css -->
+	<link rel="stylesheet"  type="text/css" href="/css/custom.css">
+	<link rel="stylesheet" href="/css/jquery.fancybox.min.css">
   <link rel="stylesheet" href="/css/style.css">
-  <script src="/js/jquery-3.3.1.min.js"></script>
+
+	<!-- Modernizer js -->
+	<script src="/js/vendor/modernizr-3.5.0.min.js"></script>
+	<script src="/js/jquery-3.3.1.min.js"></script>
 </head>
 <body>
+	<!--[if lte IE 9]>
+		<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+	<![endif]-->
 
-  <nav class="navbar navbar-expand-sm navbar-light bg-light mb-3">
-    <div class="container">
-      <a class="navbar-brand" href="/">GulapaGadgets</a>
-      <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
-      <div class="collapse navbar-collapse" id="navbarNav">    
-        <ul class="navbar-nav mr-auto">
-          <% pages.forEach(page => { %>
-            <% if(page.slug == 'home') { %>
-              <li class="nav-item"><a href="/" class="nav-link"><%= page.title %></a></li>
-            <% } else { %>
-              <li class="nav-item"><a href="/<%= page.slug %>" class="nav-link"><%= page.title %></a></li>
-            <% }  %>              
-          <% }) %>
-          </ul>
-          <ul class="navbar-nav ml-auto">
-              <li class="nav-item">
-                  <a href="/cart/checkout" class="nav-link">
-                    Mycart(
-                    <% if(typeof cart !== "undefined") { %>
-                      <%= cart.length %>
-                    <% } else {%>
-                      0
-                    <% } %>
-                    )
-                  </a>
-              </li>
-              <% if (user) { %>
-                <li class="nav-item">
-                  
-                  <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Hi, <%= user.name %></a>
-                    <div class="dropdown-menu">
-                      <a href="/users/product-status/<%= user.username %>" class="dropdown-item">Product Status</a>
-                      <a href="#" class="dropdown-item">Profile</a>
-                      <a href="/users/logout" class="dropdown-item">Logout 3</a>
-                    </div>
-                  </li>
+	<!-- Main wrapper -->
+	<div class="wrapper" id="wrapper">
+		
+		<!-- Header -->
+		<header id="wn__header" class="oth-page header__area header__absolute sticky__header">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-4 col-sm-4 col-7 col-lg-2">
+						<div class="logo">
+							<a href="/">
+								<img src="/images/logo/NOlogo.png" alt="logo images">
+							</a>
+						</div>
+					</div>
+					<div class="col-lg-8 d-none d-lg-block">
+						<nav class="mainmenu__nav">
+							<ul class="meninmenu d-flex justify-content-start">
+                    <li class="drop with--one--item"><a href="/" >Home</a></li>
+                    <li class="drop with--one--item"><a href="/" >Shop</a></li>
+                    <li class="drop with--one--item"><a href="/about-us">About us</a></li>
+                    <li class="drop with--one--item"><a href="/contact-us">Contact us</a></li>
+							</ul>
+						</nav>
+					</div>
+					<div class="col-md-8 col-sm-8 col-5 col-lg-2">
+						<ul class="header__sidebar__right d-flex justify-content-end align-items-center">
+							<li class="shop_search"><a class="search__active mr-4" href="#"></a></li>
+							<li class="shopcart"><a class="" href="/cart/checkout">
+								<span class="product_qun">
+									<% if(typeof cart !== "undefined") { %>
+										<%= cart.length %>
+									<% } else {%>
+										0
+									<% } %>
+								</span></a>
+
+								
+								
+							</li>
+
+							<!-- user settings -->
+							<% if (user) { %>
+							<li class="setting__bar__icon"><a class="setting__active" href="#"></a>
+								<div class="searchbar__content setting__block">
+									<div class="content-inner">
+										<div class="switcher-currency">
+											<strong class="label switcher-label">
+												<span>Hi, <%= user.username %></span>
+											</strong>
+											<div class="switcher-options">
+												<div class="switcher-currency-trigger">
+													<div class="setting__menu">
+														<% if (user && (user.admin == 1|| user.admin == 2 || user.admin == 3 || user.admin == 4)) { %>
+															<span><a href="/admin/pages">Admin Area</a></span>
+														<% }%>
+														<span><a href="/users/profile/<%= user.username %>">My Account</a></span>
+														<span><a href="/users/product-status/<%= user.username %>">Orderrr Status</a></span>
+														<span><a href="/users/logout">Logout</a></span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</li>
+							<% } else {%>
+							<li class="setting__bar__icon"><a href="/users/login"></a></li>
+							<% }%> 
+						</ul>
+					</div>
+				</div>
+				<!-- Start Mobile Menu -->
+				<div class="row d-none">
+					<div class="col-lg-12 d-none">
+						<nav class="mobilemenu__nav">
+							<ul class="meninmenu">
+								<% pages.forEach(page => { %>
+						            <% if(page.slug == 'home') { %>
+									<li ><a href="/"><%= page.title %></a></li>
+						            <% } else { %>
+									<li><a href="/<%= page.slug %>"><%= page.title %></a></li>
+						            <% }  %>              
+					          	<% }) %>
+							</ul>
+						</nav>
+					</div>
+				</div>
+				<!-- End Mobile Menu -->
+	            <div class="mobile-menu d-block d-lg-none">
+	            </div>
+	            <!-- Mobile Menu -->	
+			</div>		
+		</header>
+		<!-- //Header -->
+		<!-- Start Search Popup -->
+		<div class="box-search-content search_active block-bg close__top">
+			<form id="search_mini_form" class="minisearch" action="#">
+				<div class="field__search">
+					<input type="text" placeholder="Search entire store here...">
+					<div class="action">
+						<a href="#"><i class="zmdi zmdi-search"></i></a>
+					</div>
+				</div>
+			</form>
+			<div class="close__wrap">
+				<span>close</span>
+			</div>
+		</div>
+    <!-- End Search Popup -->
     
-            
-
-                  <!-- <a class="nav-link" href="/users/logout">Hi, <%= user.name %> ( logout )</a> -->
-                
-                
-                </li>
-                <% } else {%>
-                  <li class="nav-item"><a href="/users/login" class="nav-link">Login</a></li>
-                  <li class="nav-item"><a href="/users/register" class="nav-link">Register</a></li>     
-                <% } %>
-                <% if (user && user.admin == 1) { %>
-                <li class="nav-item" ><a class="nav-link" href="/admin/pages">Admin Area</a></li>
-                <% }%>         
-          </ul>
+    <!-- Start Bradcaump area -->
+    <!-- <div class="ht__bradcaump__area bg-image--10">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="bradcaump__inner text-center">
+                      <h2 class="bradcaump-title">Shop Grid</h2>
+                        <nav class="bradcaump-content">
+                          <a class="breadcrumb_item" href="/">Home</a>
+                          <span class="brd-separetor">/</span>
+                          <span class="breadcrumb_item active">Shop Grid</span>
+                        </nav>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-  </nav>
-  <div class="container">
-    <%- messages('messages', locals) %>
+    </div> -->
+		<!-- End Bradcaump area -->
 
-    <% if(errors) {%>
-      <% errors.forEach(err => { %>
-        <div class="alert alert-danger">
-          <%= err.msg %>
-        </div>
-      <% }) %>
-    <% } %>
+		
+		<!-- Start Slider area -->
+		<div class="slider-area brown__nav slider--15 slide__activation slide__arrow01 owl-carousel owl-theme">
+			<!-- Start Single Slide -->
+			<div class="slide animation__style10 bg-image--10 fullscreen align__center--left">
+					<div class="container">
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="slider__content">
+									<div class="contentbox">
+										<h2>Buy <span>your </span></h2>
+										<h2>favourite <span>Book </span></h2>
+										<h2>from <span>Here </span></h2>
+												<a class="shopbtn" href="/">shop now</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End Single Slide -->
+			<!-- Start Single Slide -->
+			<div class="slide animation__style10 bg-image--12 fullscreen align__center--left">
+					<div class="container">
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="slider__content">
+									<div class="contentbox">
+										<h2>Buy <span>your </span></h2>
+										<h2>favourite <span>Book </span></h2>
+										<h2>from <span>Here </span></h2>
+												<a class="shopbtn" href="/">shop now</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End Single Slide -->
+		</div>
+		<!-- End Slider area -->
 
-    <div class="row">
-      <div class="col-sm-12 col-md-3">
-        <h3>Categories</h3>
-        <ul class="list-group">
-          <li class="list-group-item"><a href="/products">All Products</a></li>
-          <% categories.forEach(category => {%>
-            <li class="list-group-item"><a href="/products/<%= category.slug %>"><%= category.title %></a></li>
-          <% }); %>
-        </ul>
-      </div>
-      <div class="col-sm-12 col-md-1"></div>
-      <div class="col-sm-12 col-md-8">
 
-      
+		<div class="container mt-4">
+			<%- messages('messages', locals) %>
+
+			<% if(errors) {%>
+				<% errors.forEach(err => { %>
+					<div class="alert alert-danger">
+						<%= err.msg %>
+					</div>
+				<% }) %>
+			<% } %>
+		</div>
+		

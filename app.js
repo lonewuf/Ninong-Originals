@@ -19,6 +19,7 @@ paypal.configure({
 
 const app = express();
 
+const auth = require('./config/auth');
 
 // Setup Database
 const myDb = require('./config/database');
@@ -29,6 +30,7 @@ mongoose.connection
 
 // Setup Middlewares and other settings
 app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -36,7 +38,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(fileUpload());
 
 app.use(session({
-  secret: 'my secret',
+  secret: auth.secret,
   resave: true,
   saveUninitialized: true
 //  cookie: { secure: true }
@@ -126,6 +128,7 @@ const pagesRoutes           = require('./routes/pages'),
       adminPagesRoutes      = require('./routes/admin_pages'),
       adminCategoriesRoutes = require('./routes/admin_categories'),
       adminProducts         = require('./routes/admin_products'),
+      admin                 = require('./routes/admin'),
       productsRoutes        = require('./routes/products'),
       usersRoutes           = require('./routes/users'),
       salesRoutes           = require('./routes/admin_sales'),
@@ -136,6 +139,7 @@ app.use('/admin/pages', adminPagesRoutes);
 app.use('/admin/categories', adminCategoriesRoutes);
 app.use('/admin/products', adminProducts);
 app.use('/admin/sales', salesRoutes);
+app.use('/admin', admin);
 app.use('/products', productsRoutes);
 app.use('/cart', cartRoutes);
 app.use('/users', usersRoutes);

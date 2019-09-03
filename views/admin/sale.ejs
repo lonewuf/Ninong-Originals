@@ -29,6 +29,8 @@
             <th>Name</th>
             <th>Address</th>
             <th>Phone Number</th>
+            <th>Cart price</th>
+            <th>Shipping Fee</th>
             <th>Total price</th>
             <th>Invoice</th>
         </tr>
@@ -40,6 +42,8 @@
             <td><%= sales.address %></td>
             <td><%= sales.phone_number %></td>
             <td>&#8369; <%= sales.total.toFixed(2) %></td>
+            <td>&#8369; <%= sales.shipping_fee.toFixed(2) %></td></td>
+            <td>&#8369; <%= sales.totalWithShipping.toFixed(2) %></td>
             <td><a target="_blank" href="/admin/sales/<%= sales._id %>/show-invoice" class="btn btn-primary">Show invoice</a></td>
         </tr>
     </tbody>

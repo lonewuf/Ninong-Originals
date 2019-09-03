@@ -2,63 +2,177 @@
 
 <% if(typeof cart !== 'undefined') { %>
 
-  <h1 class="display-4">My Cart</h1>
+  <!-- Start Checkout Area -->
+  <section class="wn__checkout__area section-padding--lg bg__white">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="wn_checkout_wrap">
+              <% if(!user) { %>
+              <div class="checkout_info">
+                <span>Returning customer ?</span>
+                <a class="showlogin" href="#">Click here to login</a>
+              </div>
+              <div class="checkout_login">
+                <form class="wn__checkout__form"  action="/users/login-from-billing" method="POST">
+                  <p>If you have shopped with us before, please enter your details in the boxes below. If you are a new customer please proceed to the Billing & Shipping section.</p>
 
-  <table class="table table-striped alignmid">
-      <thead>
-          <tr>
-              <th>Image</th>
-              <th>Title</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th></th>
-              <th>Subtotal</th>
-          </tr>
-      </thead>
-      <tbody>
-          <% var total = 0 %>
-          <% cart.forEach(product => { %>
-          <% var subTotal = parseFloat(product.price * product.qty).toFixed(2) %>
-          <% total += +subTotal %>
-            <tr>
-              <td><img class="cpi" src="<%= product.image %>" alt="none"></td>
-              <td><%= product.title %></td>
-              <td>&#8369;<%= product.price %></td>
-              <td><%= product.qty %></td>
-              <td>
-                <a href="/cart/update/<%= product.title %>?action=add">+</a>&nbsp;
-                <a href="/cart/update/<%= product.title %>?action=remove">-</a>&nbsp;
-                <a href="/cart/update/<%= product.title %>?action=clear">Clear</a>&nbsp;
+                  <div class="input__box">
+                    <label>Username<span>*</span></label>
+                    <input name="username" id="username" type="text">
+                  </div>
 
-              </td>
-              <td>&#8369;<%= subTotal %></td>
-            </tr>
-          <% }); %>
-          <tr>
-              <td colspan="6" align="right"><b>Total: </b>&#8369;<%= parseFloat(total).toFixed(2) %></td>
-          </tr>
-          <tr>
-              <form action="/cart/confirm-payment" method="GET">
-              <td colspan="2" align="right">
-                <select class="dropdown" name="selectPayment">
-                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                      My Dropdown
-                  </button>
-                  <div >
-                    <option name="none" value="none">Select Payment</option>
-                    <option name="paypal" value="paypal">Paypal</option>
-                    <option name="cod" value="cod">Cash on Delivery</option>
-                  </div>           
-              </select>  
-              </td>
-              <td colspan="5" align="right">
-                    <button class="btn btn-warning" type="submit">Checkout</button>
-              </td>
-            </form>
+                  <div class="input__box">
+                    <label>Password <span>*</span></label>
+                    <input name="password" id="username" type="password">
+                  </div>
+                  <div class="form__btn">
+                    <button type="submit">Login</button>&nbsp;
+                    <a href="/users/forgot-password">Lost your password?</a>
+                  </div>
+                </form>
+              </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-6 col-12">
+            <div class="customer_details">
+              <h3>Billing details</h3>
+              <div class="customar__field">
+                <div class="input_box">
+                  <label>Name<span>*</span></label>
+                  <input name="name" id="name" type="text">
+                </div>
+                <!-- <div class="input_box">
+                  <label>Company name<span>*</span></label>
+                  <input type="text">
+                </div>
+-->        						<div class="input_box">
+                  <label>City<span>*</span></label>
+                  <select name="city" id="city" class="select__option">
+                <option>Select a city..</option>
+                <option>Afghanistan</option>
+                <option>American Samoa</option>
+                <option>Anguilla</option>
+                <option>American Samoa</option>
+                <option>Antarctica</option>
+                <option>Antigua and Barbuda</option>
+                  </select>
+                </div>
+                <div class="input_box">
+                  <label>Address <span>*</span></label>
+                  <input name="address" id="address" type="text" placeholder="Street address">
+                </div>
+                <div class="input_box">
+                  <input type="text" placeholder="Apartment, suite, unit etc. (optional)">
+                </div>
+                <div class="input_box">
+                  <label>Barangay<span>*</span></label>
+                  <select name="barangay" id="barangay" class="select__option">
+                <option>Select a barangay…</option>
+                <option>Afghanistan</option>
+                <option>American Samoa</option>
+                <option>Anguilla</option>
+                <option>American Samoa</option>
+                <option>Antarctica</option>
+                <option>Antigua and Barbuda</option>
+                  </select>
+                </div>
+            <div class="input_box">
+              <label>Postcode / ZIP <span>*</span></label>
+              <input type="text">
+            </div>
+            <div class="margin_between">
+              <div class="input_box space_between">
+                <label>Phone <span>*</span></label>
+                <input name="phone" id="phone" type="text">
+              </div>
 
-          </tr>
-      </tbody>
-  </table>
+              <div class="input_box space_between">
+                <label>Email address <span>*</span></label>
+                <input name="email" id="email" type="email">
+              </div>
+            </div>
+              </div>
+              <div class="create__account">
+                <div class="wn__accountbox">
+                  <input class="input-checkbox" name="createaccount" value="1" type="checkbox">
+                  <span>Create an account to proceed in billing</span>
+                </div>
+                <div class="account__field">
+                <label>Account password<span>*</span></label>
+                <input type="password" placeholder="password">
+                <label>Repeat Password<span>*</span></label>
+                <input type="password" placeholder="password">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-12 md-mt-40 sm-mt-40">
+            <div class="wn__order__box">
+              <h3 class="onder__title">Your order</h3>
+              <ul class="order__total">
+                <li>Product</li>
+                <li>Total</li>
+              </ul>
+              <ul class="order_product">
+                <% var total = 0 %>
+                  <% cart.forEach(product => { %>
+                  <% var subTotal = parseFloat(product.price * product.qty).toFixed(2) %>
+                  <% total += +subTotal %>
+                  <li><%= product.title %> × <%= product.qty %><span>&#8369;<%= subTotal %></span></li>
+                <% }); %>
+                <% var orderTotal = 100 + total %>
+
+              </ul>
+              <ul class="shipping__method">
+                <li>Cart Subtotal <span>&#8369;<%= parseFloat(total).toFixed(2) %></span></li>
+                <li>Shipping fee <span>&#8369;100.00</span></li>
+              </ul>
+              <ul class="total__amount">
+                <li>Order Total <span>&#8369;<%= parseFloat(orderTotal).toFixed(2) %></span></li>
+              </ul>
+            </div>
+          <div id="accordion" class="checkout_accordion mt--30" role="tablist">
+            <div class="payment">
+                <div class="che__header" role="tab" id="headingOne">
+                    <a class="checkout__title" data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <span>Paypal</span>
+                    </a>
+                </div>
+                <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="payment-body">Pay by paypal</div>
+                    <div class="payment-body">
+                      <form action="/cart/pay" method="POST">
+                        <button id="checkOutPaypal" class="btn btn-outline-success btn-sm" type="submit">Checkout</button>
+                      </form>
+                    </div>
+                </div>
+            </div>
+            <div class="payment">
+                <div class="che__header" role="tab" id="headingTwo">
+                    <a class="collapsed checkout__title" data-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      <span>Cash on Delivery</span>
+                    </a>
+                </div>
+                <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo" data-parent="#accordion">
+                    <div class="payment-body">Cash on Delivery</div>
+                    <div class="payment-body">
+                      <form action="/cart/cod" method="POST">
+                        <button id="checkOutCOD" class="btn btn-outline-success btn-sm" type="submit">Checkout</button>
+                      </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Checkout Area -->
 
 <% } else { %>
   <h1 class="display-4 text-center">Your cart is empty</h1>
@@ -68,18 +182,13 @@
 
   $(() => {
   
-    // $('a.buyit').on('click', function (e) {
-    //   e.preventDefault();
-        
-    //     $.get('/cart/buynow', function() {
-    //         $('form.pp input[type=image]').click();
-    //         $('.ajaxbg').show();
-    //     });
-    // });
+    $('#checkOutCOD').on('click', function () {
+        if (!confirm('Confirm Checkout'))
+            return false;
+    });
 
-
-    $('a.clearcart').on('click', function () {
-        if (!confirm('Confirm clear cart'))
+    $('#checkOutPaypal').on('click', function () {
+        if (!confirm('Confirm Checkout'))
             return false;
     });
 

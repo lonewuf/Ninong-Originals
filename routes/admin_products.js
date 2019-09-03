@@ -16,7 +16,7 @@ const auth = require('../config/auth')
 router.get('/', auth.isAdmin, (req, res) => {
     var count = 0;
 
-    Product.count((err, c) => {
+    Product.countDocuments((err, c) => {
       count = c;
     });
     console.log(count);
@@ -233,17 +233,20 @@ router.post('/edit-product/:id', auth.isAdmin, (req, res) => {
   req.checkBody('title', 'Title must have a value').notEmpty();
   req.checkBody('description', 'Description must have a value').notEmpty();
   req.checkBody('price', 'Price must have a value').notEmpty();
-  req.checkBody('quantity', 'Quantity must have a value').notEmpty();
   req.checkBody('image', 'You muse upload an image').isImage(imageF);
-  
+
   var title = req.body.title;
   var slug = title.replace(/\s+/g, '-').toLowerCase();
   var description = req.body.description;
   var price = req.body.price;
   var category = req.body.category;
-  var quantity = req.body.quantity;
+  var quantity = !!req.body.quantityAdd ? req.body.quantityAdd : req.body.quantityRemove;
+
+  var quantityBool = !!req.body.quantityAdd ? true : false;
   var pimage = req.body.pimage;
   var id = req.params.id
+  console.log(req.body.quantityAdd, req.body.quantityRemove)
+  console.log(!!req.body.quantityAdd)
   
   // Regex for checking price if numeric
   var checkNum = /[^0-9.]/;
@@ -261,7 +264,7 @@ router.post('/edit-product/:id', auth.isAdmin, (req, res) => {
         quantity: quantity
       });
     })
-  } else if(checkQuantity.test(quantity)) {
+  } else if(checkQuantity.test(parseInt(quantity))) {
     req.flash('Quantity', 'Quantity must be numberic');
     Category.find({}, (err, foundCategories) => {
       res.render('admin/add_product', {
@@ -294,12 +297,14 @@ router.post('/edit-product/:id', auth.isAdmin, (req, res) => {
           if (err)
             throw (err);
 
+          console.log(foundProductById, quantity)
+
           foundProductById.title = title;
           foundProductById.slug = slug;
           foundProductById.price = parseFloat(price).toFixed(2);
           foundProductById.description = description;
           foundProductById.category = category;
-          foundProductById.quantity = quantity;
+          foundProductById.quantity = quantityBool ? parseInt(foundProductById.quantity) + parseInt(quantity) :  parseInt(foundProductById.quantity) - parseInt(quantity);
           if(imageF != "") {
             foundProductById.image = imageF;
           }

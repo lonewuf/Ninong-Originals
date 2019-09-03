@@ -44,24 +44,31 @@ router.get('/:category', (req, res) => {
 router.get('/:category/:product', (req, res) => {
 
   var galleryImages = null;
+  console.log(req.params)
 
   Product.findOne({slug: req.params.product}, (err, foundProduct) => {
     if(err)
       throw(err)
+    
+    console.log(foundProduct)
     
     var galleryDir = `public/product_images/${foundProduct._id}/gallery`;
 
     fs.readdir(galleryDir, (err, files) => {
       if(err)
         throw(err)
-
+      
+      Product.find({})
+        .then(foundProducts => {
+          res.render('product', {
+            title: foundProduct.title,
+            product: foundProduct,
+            galleryImages: galleryImages,
+            products: foundProducts
+          });
+        })
+        .catch(err => console.log(err))
       galleryImages = files;
-
-      res.render('product', {
-        title: foundProduct.title,
-        product: foundProduct,
-        galleryImages: galleryImages
-      });
     });
 
   });
