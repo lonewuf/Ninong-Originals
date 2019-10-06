@@ -16,16 +16,29 @@ const auth = require('../config/auth')
 router.get('/', auth.isAdmin, (req, res) => {
     var count = 0;
 
-    Product.countDocuments((err, c) => {
-      count = c;
-    });
-    console.log(count);
-    Product.find({}, (err, products) => {
-      res.render('admin/products', {
-        products: products,
-        count: count
+    // Product.countDocuments((err, c) => {
+    //   count = c;
+    // });
+    // console.log(count);
+    // Product.find({}, (err, products) => {
+    //   res.render('admin/products', {
+    //     products: products,
+    //     count: count
+    //   })
+    // })
+
+    Product.countDocuments()
+      .then(count => {
+        Product.find({})
+          .then(products => {
+            res.render('admin/products', {
+              products,
+              count
+            })
+          })
+          .catch(err => console.log(err))
       })
-    })
+      .catch(err => console.log(err))
 
 });
 

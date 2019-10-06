@@ -124,7 +124,7 @@ router.get('/add-by-id/:id', (req, res) => {
       req.flash('danger', 'Sorry out of stock');
     }
     res.redirect('back');
-  });
+  }); 
 });
 
 
