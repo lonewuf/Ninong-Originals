@@ -121,7 +121,7 @@ app.use((req, res, next) => {
   res.locals.user = req.user || null;
   next();
 });
-
+ 
 
 // Call all routes
 const pagesRoutes           = require('./routes/pages'),
@@ -144,6 +144,9 @@ app.use('/products', productsRoutes);
 app.use('/cart', cartRoutes);
 app.use('/users', usersRoutes);
 app.use('/', pagesRoutes);
+app.get('*', (req, res) => {
+  res.status(404).send('Page not found');
+})
 
 var server_host = process.env.OPENSHIFT_NODEJS_IP || process.env.YOUR_HOST || '0.0.0.0';
 

@@ -112,71 +112,43 @@
               <% } else { %>
                 <div class="customar__field">
                   <div class="input_box">
-                    <label>Name<span>*</span></label>
-                    <input name="name" id="name" type="text">
-                  </div>
-                  <!-- <div class="input_box">
-                    <label>Company name<span>*</span></label>
-                    <input type="text">
-                  </div>-->        						
+                    <label>Name </label>
+                    <input  name="name" type="text" value="<%= user.name %>">
+                  </div>			
                   <div class="input_box">
-                    <label>City<span>*</span></label>
-                    <select name="city" id="city" class="select__option">
-                  <option>Select a city..</option>
-                  <option>Afghanistan</option>
-                  <option>American Samoa</option>
-                  <option>Anguilla</option>
-                  <option>American Samoa</option>
-                  <option>Antarctica</option>
-                  <option>Antigua and Barbuda</option>
+                    <label>Email</label>
+                    <input  name="email" type="email" value="<%= user.email %>">
+                  </div>
+                  <div class="input_box">
+                    <label>Phone number </label>
+                    <input  name="phone_num" type="text" value="<%= user.phone_number %>">
+                  </div>
+                  <div class="input_box">
+                    <label>City</label>
+                    <select name="city" class="select__option">
+                      <option value="Caloocan">Caloocan</option>
+                      <option value="Las Piñas">Las Piñas</option>
+                      <option value="Makati">Makati</option>
+                      <option value="Malabon">Malabon</option>
+                      <option value="Mandaluyong">Mandaluyong</option>
+                      <option value="Manila">Manila</option>
+                      <option value="Marikina">Marikina</option>
+                      <option value="Muntinlupa">Muntinlupa</option>
+                      <option value="Navotas">Navotas</option>
+                      <option value="Parañaque">Parañaque</option>
+                      <option value="Pasay">Pasay</option> 
+                      <option value="Pasig">Pasig</option>
+                      <option value="Pateros (Municipality)">Pateros (Municipality)</option>
+                      <option value="Quezon City">Quezon City</option>
+                      <option value="San Juan">San Juan</option>
+                      <option value="Taguig">Taguig</option>
+                      <option value="Valenzuela">Valenzuela</option>
                     </select>
                   </div>
                   <div class="input_box">
-                    <label>Address <span>*</span></label>
-                    <input name="address" id="address" type="text" placeholder="Street address">
+                    <label>Address</label>
+                    <input  name="address" type="text" value="<%= user.address %>">
                   </div>
-                  <div class="input_box">
-                    <input type="text" placeholder="Apartment, suite, unit etc. (optional)">
-                  </div>
-                  <div class="input_box">
-                    <label>Barangay<span>*</span></label>
-                    <select name="barangay" id="barangay" class="select__option">
-                  <option>Select a barangay…</option>
-                  <option>Afghanistan</option>
-                  <option>American Samoa</option>
-                  <option>Anguilla</option>
-                  <option>American Samoa</option>
-                  <option>Antarctica</option>
-                  <option>Antigua and Barbuda</option>
-                    </select>
-                  </div>
-                <div class="input_box">
-                  <label>Postcode / ZIP <span>*</span></label>
-                  <input type="text">
-                </div>
-                <div class="margin_between">
-                  <div class="input_box space_between">
-                    <label>Phone <span>*</span></label>
-                    <input name="phone" id="phone" type="text">
-                  </div>
-
-                  <div class="input_box space_between">
-                    <label>Email address <span>*</span></label>
-                    <input name="email" id="email" type="email">
-                  </div>
-                </div>
-                  </div>
-                  <div class="create__account">
-                    <div class="wn__accountbox">
-                      <input class="input-checkbox" name="createaccount" value="1" type="checkbox">
-                      <span>Create an account to proceed in billing</span>
-                    </div>
-                    <div class="account__field">
-                    <label>Account password<span>*</span></label>
-                    <input type="password" placeholder="password">
-                    <label>Repeat Password<span>*</span></label>
-                    <input type="password" placeholder="password">
-                    </div>
                   </div>
               <% } %>
             </div>
